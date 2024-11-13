@@ -1,6 +1,6 @@
 module Gismo
 
-import gismo_jll:libgismo
+@IMPORT_LIBGISMO@
 
 # Forward declaration of structs
 include("Declarations.jl")

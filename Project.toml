@@ -3,6 +3,9 @@ uuid = "f019f137-166b-4455-b646-ee200b009b83"
 authors = ["Hugo Verhelst <hugoverhelst1995@gmail.com>"]
 version = "0.1.0"
 
+[deps]
+gismo_jll = "c3015cfb-32aa-504c-ba3d-5541e7ecaf35"
+
 [extras]
 BenchmarkPlots = "ab8c0f59-4072-4e0d-8f91-a91e1495eb26"
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"

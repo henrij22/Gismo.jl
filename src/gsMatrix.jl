@@ -49,7 +49,7 @@ end
 
 """
     rows(object::EigenMatrix)
-    
+
 Returns the number of rows in the matrix.
 
 # Arguments
