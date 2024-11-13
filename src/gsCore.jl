@@ -162,16 +162,33 @@ Refines a basis
 ...
 # Arguments
 - `obj::Basis`: a Gismo Basis
-- `boxes::Vector{Cint}`: the boxes to refine
+- `boxes::Vector{Cint}`: the boxes to refine (in index format)
 ...
 """
 function refineElements(obj::Basis,boxes::Vector{Cint})::Nothing
     @assert mod(length(boxes),2*domainDim(obj)+1)==0 "Boxes should have size 2*domainDim+1"
-    print(boxes)
-    print(length(boxes))
-    ccall((:gsBasis_refineElements,libgismo),Ptr{gsCBasis},
-            (Ptr{gsCBasis},Vector{Cint},Cint),obj.ptr,boxes,length(boxes))
+    ccall((:gsBasis_refineElements,libgismo),Cvoid,
+            (Ptr{gsCBasis},Ptr{Cint},Cint),
+            obj.ptr,boxes,length(boxes))
 end
+
+"""
+Refines a basis
+...
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `boxes::Matrix{Cdouble}`: the boxes to refine (first column is the lower bound, second column is the upper bound)
+...
+"""
+function refine(obj::Basis,boxes::Matrix{Cdouble},refExt::Cint=Int32(0))::Nothing
+    @assert Base.size(boxes,1)==domainDim(obj) "The boxes should have the same number of rows as the domain dimension"
+    @assert Base.size(boxes,2)==2 "The boxes should have two columns"
+    bb = EigenMatrix(Base.size(boxes,1), Base.size(boxes,2), pointer(boxes) )
+    ccall((:gsBasis_refine,libgismo),Cvoid,
+            (Ptr{gsCBasis},Ptr{gsCMatrix},Cint),
+            obj.ptr,bb.ptr,refExt)
+end
+
 
 """
 Returns the actives of a basis
@@ -339,19 +356,16 @@ Returns the closest point of a geometry
 ...
 # Arguments
 - `obj::Geometry`: a Gismo Geometry
-- `x::Vector{Cdouble}`: a vector of points
+- `x::Matrix{Cdouble}`: a matrix of points
 - `accuracy::Cdouble=1e-6`: the accuracy of the computation
 ...
 """
-function closest(obj::Geometry,x::Vector{Cdouble},accuracy::Cdouble=1e-6)::Tuple{Cdouble,EigenMatrix}
+function closest(obj::Geometry,x::Matrix{Cdouble},accuracy::Cdouble=1e-6)::Tuple{Cdouble,EigenMatrix}
     xx = EigenMatrix(Base.size(x,1), Base.size(x,2), pointer(x) )
     result = EigenMatrix()
     dist = ccall((:gsGeometry_closestPointTo,libgismo),Cdouble,
       (Ptr{gsCGeometry},Ptr{gsCMatrix},Ptr{gsCMatrix},Cdouble,),
       obj.ptr,xx.ptr,result.ptr,accuracy)
-    # display(result)
-    # display(result)
-    # display(result)
     return dist,result;
 end
 

@@ -5,6 +5,7 @@ version = "0.1.0"
 
 [deps]
 gismo_jll = "c3015cfb-32aa-504c-ba3d-5541e7ecaf35"
+Test =  "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [extras]
 BenchmarkPlots = "ab8c0f59-4072-4e0d-8f91-a91e1495eb26"
