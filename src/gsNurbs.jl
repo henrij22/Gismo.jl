@@ -4,6 +4,7 @@ export
     BSpline,
     TensorBSplineBasis,
     TensorBSpline
+    #= TODO =#
 
 ########################################################################
 # gsKnotVector
@@ -140,54 +141,33 @@ end
 Defines a 2D tensor B-spline basis.
 
 # Arguments
-- `kv1::KnotVector`: the first knot vector
-- `kv2::KnotVector`: the second knot vector
+- `kv::KnotVector`: the knot vectors
 """
-function TensorBSplineBasis(kv1::KnotVector,kv2::KnotVector)::Basis
-    b = ccall((:gsTensorBSplineBasis2_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},Ptr{gsCKnotVector},),kv1.ptr,kv2.ptr)
-    return Basis(b)
-end
-
-"""
-    TensorBSplineBasis(kv1::KnotVector,kv2::KnotVector,kv3::KnotVector)
-
-Defines a 3D tensor B-spline basis.
-
-# Arguments
-- `kv1::KnotVector`: the first knot vector
-- `kv2::KnotVector`: the second knot vector
-- `kv3::KnotVector`: the third knot vector
-"""
-function TensorBSplineBasis(kv1::KnotVector,kv2::KnotVector,kv3::KnotVector)::Basis
-    b = ccall((:gsTensorBSplineBasis3_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},
+function TensorBSplineBasis(kv::Vararg{KnotVector})::Basis
+    d = Base.length(kv)
+    if (d==1)
+        b = ccall((:gsBSplineBasis_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},),kv[1].ptr)
+    elseif (d==2)
+        b = ccall((:gsTensorBSplineBasis2_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},Ptr{gsCKnotVector},),kv[1].ptr,kv[2].ptr)
+    elseif (d==3)
+        b = ccall((:gsTensorBSplineBasis3_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},),
-                                                                        kv1.ptr,
-                                                                        kv2.ptr,
-                                                                        kv3.ptr)
-    return Basis(b)
-end
-
-"""
-    TensorBSplineBasis(kv1::KnotVector,kv2::KnotVector,kv3::KnotVector,kv4::KnotVector)
-
-Defines a 4D tensor B-spline basis.
-
-# Arguments
-- `kv1::KnotVector`: the first knot vector
-- `kv2::KnotVector`: the second knot vector
-- `kv3::KnotVector`: the third knot vector
-- `kv4::KnotVector`: the fourth knot vector
-"""
-function TensorBSplineBasis(kv1::KnotVector,kv2::KnotVector,kv3::KnotVector,kv4::KnotVector)::Basis
-    b = ccall((:gsTensorBSplineBasis3_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},
+                                                                        kv[1].ptr,
+                                                                        kv[2].ptr,
+                                                                        kv[3].ptr)
+    elseif (d==4)
+        b = ccall((:gsTensorBSplineBasis4_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},),
-                                                                        kv1.ptr,
-                                                                        kv2.ptr,
-                                                                        kv3.ptr,
-                                                                        kv4.ptr)
+                                                                        kv[1].ptr,
+                                                                        kv[2].ptr,
+                                                                        kv[3].ptr,
+                                                                        kv[4].ptr)
+    else
+        error("TensorBSplineBasis not implemented for this dimension")
+    end
     return Basis(b)
 end
 
@@ -284,57 +264,34 @@ end
 Defines a 2D tensor NURBS basis.
 
 # Arguments
-- `kv1::KnotVector`: the first knot vector
-- `kv2::KnotVector`: the second knot vector
+- `kv::KnotVector`: knot vectors
 """
-function TensorNurbsBasis(kv1::KnotVector,kv2::KnotVector)::Basis
-    b = ccall((:gsTensorNurbsBasis2_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},Ptr{gsCKnotVector},),kv1.ptr,kv2.ptr)
-    return Basis(b)
-end
-
-"""
-    TensorNurbsBasis(kv1::KnotVector,kv2::KnotVector,kv3::KnotVector)
-
-Defines a 3D tensor NURBS basis.
-
-# Arguments
-- `kv1::KnotVector`: the first knot vector
-- `kv2::KnotVector`: the second knot vector
-- `kv3::KnotVector`: the third knot vector
-"""
-function TensorNurbsBasis(kv1::KnotVector,kv2::KnotVector,kv3::KnotVector)::Basis
-    b = ccall((:gsTensorNurbsBasis3_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},
+function TensorNurbsBasis(kv::Vararg{KnotVector})::Basis
+    d = Base.length(kv)
+    if (d==1)
+        b = ccall((:gsNurbsBasis_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},),kv[1].ptr)
+    elseif (d==2)
+        b = ccall((:gsTensorNurbsBasis2_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},Ptr{gsCKnotVector},),kv[1].ptr,kv[2].ptr)
+    elseif (d==3)
+        b = ccall((:gsTensorNurbsBasis3_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},),
-                                                                        kv1.ptr,
-                                                                        kv2.ptr,
-                                                                        kv3.ptr)
-    return Basis(b)
-end
-
-"""
-    TensorNurbsBasis(kv1::KnotVector,kv2::KnotVector,kv3::KnotVector,kv4::KnotVector)
-
-Defines a 4D tensor NURBS basis.
-
-# Arguments
-- `kv1::KnotVector`: the first knot vector
-- `kv2::KnotVector`: the second knot vector
-- `kv3::KnotVector`: the third knot vector
-- `kv4::KnotVector`: the fourth knot vector
-"""
-function TensorNurbsBasis(kv1::KnotVector,kv2::KnotVector,kv3::KnotVector,kv4::KnotVector)::Basis
-    b = ccall((:gsTensorNurbsBasis3_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},
+                                                                        kv[1].ptr,
+                                                                        kv[2].ptr,
+                                                                        kv[3].ptr)
+    elseif (d==4)
+        b = ccall((:gsTensorNurbsBasis4_create,libgismo),Ptr{gsCBasis},(Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},
                                                                          Ptr{gsCKnotVector},),
-                                                                        kv1.ptr,
-                                                                        kv2.ptr,
-                                                                        kv3.ptr,
-                                                                        kv4.ptr)
-    return Basis(b)
+                                                                        kv[1].ptr,
+                                                                        kv[2].ptr,
+                                                                        kv[3].ptr,
+                                                                        kv[4].ptr)
+    else
+        error("TensorNurbsBasis not implemented for this dimension")
+    end
 end
-
 
 ########################################################################
 # gsTensorNurbs
@@ -368,4 +325,111 @@ function TensorNurbs(basis::Basis,coefs::Matrix{Cdouble})::Geometry
         error("TensorNurbs not implemented for this dimension")
     end
     return Geometry(g)
+end
+
+########################################################################
+# gsNurbsCreator
+########################################################################
+
+function BSplineUnitInterval(deg::Cint)::Geometry
+    g = ccall((:gsNurbsCreator_BSplineUnitInterval,libgismo),Ptr{gsCGeometry},(Cint,),deg)
+    return Geometry(g)
+end
+
+function BSplineRectangle(low_x::Cdouble=0.0,
+                          low_y::Cdouble=0.0,
+                          upp_x::Cdouble=1.0,
+                          upp_y::Cdouble=1.0,
+                          turndeg::Cdouble=0.0)::Geometry
+    g = ccall((:gsNurbsCreator_BSplineRectangle,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble,Cdouble,Cdouble,Cdouble),low_x,low_y,upp_x,upp_y,turndeg)
+    return Geometry(g)
+end
+
+function BSplineTrapezium(Lbot::Cdouble=1.0,
+                          Ltop::Cdouble=0.5,
+                          H::Cdouble=1.0,
+                          d::Cdouble=0.0,
+                          turndeg::Cdouble=0.0)::Geometry
+    g = ccall((:gsNurbsCreator_BSplineTrapezium,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble,Cdouble,Cdouble,Cdouble),Lbot,Ltop,H,d,turndeg)
+    return Geometry(g)
+end
+
+function BSplineSquare(r::Cdouble=1.0,
+                       x::Cdouble=0.0,
+                       y::Cdouble=0.0)::Geometry
+    g = ccall((:gsNurbsCreator_BSplineSquare,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble,Cdouble),r,x,y)
+    return Geometry(g)
+end
+
+function BSplineSquareGrid(n::Cint,
+                           m::Cint,
+                           r::Cdouble=1.0,
+                           lx::Cdouble=0.0,
+                           ly::Cdouble=0.0)::MultiPatch
+    g = ccall((:gsNurbsCreator_BSplineSquareGrid,libgismo),Ptr{gsCMultiPatch},(Cint,Cint,Cdouble,Cdouble,Cdouble),n,m,r,lx,ly)
+    return MultiPatch(g)
+end
+
+function BSplineCube(r::Cdouble=1.0,
+                     x::Cdouble=0.0,
+                     y::Cdouble=0.0,
+                     z::Cdouble=0.0)::Geometry
+    g = ccall((:gsNurbsCreator_BSplineCube,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble,Cdouble,Cdouble),r,x,y,z)
+    return Geometry(g)
+end
+
+function BSplineCubeGrid(n::Cint,
+                         m::Cint,
+                         p::Cint,
+                         r::Cdouble=1.0,
+                         lx::Cdouble=0.0,
+                         ly::Cdouble=0.0,
+                         lz::Cdouble=0.0)::MultiPatch
+    g = ccall((:gsNurbsCreator_BSplineCubeGrid,libgismo),Ptr{gsCMultiPatch},(Cint,Cint,Cint,Cdouble,Cdouble,Cdouble,Cdouble),n,m,p,r,lx,ly,lz)
+    return MultiPatch(g)
+end
+
+function NurbsQuarterAnnulus(r1::Cdouble=1.0,
+                             r2::Cdouble=2.0)::Geometry
+    g = ccall((:gsNurbsCreator_NurbsQuarterAnnulus,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),r1,r2)
+    return Geometry(g)
+end
+
+function NurbsAnnulus(r1::Cdouble=1.0,
+                      r2::Cdouble=2.0)::Geometry
+    g = ccall((:gsNurbsCreator_NurbsAnnulus,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),r1,r2)
+    return Geometry(g)
+end
+
+function BSplineSaddle()::Geometry
+    g = ccall((:gsNurbsCreator_BSplineSaddle,libgismo),Ptr{gsCGeometry},(),)
+    return Geometry(g)
+end
+
+function NurbsSphere(r::Cdouble=1.0,
+                     x::Cdouble=0.0,
+                     y::Cdouble=0.0,
+                     z::Cdouble=0.0)::Geometry
+    g = ccall((:gsNurbsCreator_NurbsSphere,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble,Cdouble,Cdouble),r,x,y,z)
+    return Geometry(g)
+end
+
+function NurbsCircle(r::Cdouble=1.0,
+                     x::Cdouble=0.0,
+                     y::Cdouble=0.0)::Geometry
+    g = ccall((:gsNurbsCreator_NurbsCircle,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble,Cdouble),r,x,y)
+    return Geometry(g)
+end
+
+function BSplineTriangle(H::Cdouble=1.0,
+                         W::Cdouble=1.0)::Geometry
+    g = ccall((:gsNurbsCreator_BSplineTriangle,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),H,W)
+    return Geometry(g)
+end
+
+function BSplineStar(N::Cint=3,
+                     R0::Cdouble=1.0,
+                     R1::Cdouble=0.5)::MultiPatch
+    g = ccall((:gsNurbsCreator_BSplineStar,libgismo),Ptr{gsCMultiPatch},(Cint,Cdouble,Cdouble),N,R0,R1)
+    return MultiPatch(g)
 end
