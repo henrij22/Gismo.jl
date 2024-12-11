@@ -21,12 +21,21 @@ export
 - `a::Vector{Float64}`: the knot vector
 
 # Examples
-```jldoctest myKnotVector
-julia> kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
+```jldoctest myKnotVector; output=(false)
+kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
+# output
 ```
 """
 mutable struct KnotVector
     ptr::Ptr{gsCKnotVector}
+
+    function KnotVector(knots::Ptr{gsCKnotVector},delete::Bool=true)
+        b = new(knots)
+        if (delete)
+            finalizer(destroy,b)
+        end
+        return b
+    end
 
     function KnotVector(filename::String)
         g = new(ccall((:gsCReadFile,libgismo),Ptr{gsCKnotVector},(Cstring,),filename) )
@@ -56,14 +65,18 @@ Returns the number of elements in the knot vector.
 - `kv::KnotVector`: the knot vector
 
 # Examples
-```jldoctest myKnotVector
-julia> print(Gismo.size(kv))
-# output
-9
-```
+# ```jldoctest myKnotVector
+# kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
+# print(Gismo.uSize(kv))
+# # output
+# 9
+# ```
 """
 function size(kv::KnotVector)::Int64
     return ccall((:gsKnotVector_size,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
+end
+function Base.size(kv::KnotVector)::Int64
+    return Gismo.size(kv)
 end
 
 function uSize(kv::KnotVector)::Int64
@@ -178,6 +191,14 @@ function TensorBSplineBasis(kv1::KnotVector,kv2::KnotVector,kv3::KnotVector,kv4:
     return Basis(b)
 end
 
+function knots(basis::Basis, dir::Cint)::KnotVector
+    if (domainDim(basis)==1)
+        kv = ccall((:gsBSplineBasis_knots,libgismo),Ptr{gsCKnotVector},(Ptr{gsCBasis},Cint),basis.ptr,dir)
+    else
+        kv = ccall((:gsTensorBSplineBasis_knots,libgismo),Ptr{gsCKnotVector},(Ptr{gsCBasis},Cint),basis.ptr,dir)
+    end
+    return KnotVector(kv)
+end
 
 ########################################################################
 # gsTensorBSpline

@@ -141,6 +141,9 @@ Returns the size of a basis
 function size(obj::Basis)::Cint
     return ccall((:gsBasis_size,libgismo),Cint,(Ptr{gsCBasis},),obj.ptr)
 end
+function Base.size(obj::Basis)::Cint
+    return Gismo.size(obj)
+end
 
 """
 Refines a basis
@@ -223,6 +226,98 @@ function eval(obj::Basis,u::Matrix{Cdouble})::EigenMatrix
     ccall((:gsFunctionSet_eval_into,libgismo),Cvoid,
       (Ptr{gsCBasis},Ptr{gsCMatrix},Ptr{gsCMatrix},),
       obj.ptr,uu.ptr,result.ptr)
+    return result;
+end
+function Base.eval(obj::Basis,u::Matrix{Cdouble})::EigenMatrix
+    return Gismo.eval(obj,u)
+end
+
+"""
+Returns the derivative of a basis
+...
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `u::Matrix{Cdouble}`: a matrix of points
+...
+"""
+function deriv(obj::Basis,u::Matrix{Cdouble})::EigenMatrix
+    @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
+    uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
+    result = EigenMatrix()
+    ccall((:gsFunctionSet_deriv_into,libgismo),Cvoid,
+      (Ptr{gsCBasis},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+      obj.ptr,uu.ptr,result.ptr)
+    return result;
+end
+"""
+Returns the second derivative of a basis
+...
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `u::Matrix{Cdouble}`: a matrix of points
+...
+"""
+function deriv2(obj::Basis,u::Matrix{Cdouble})::EigenMatrix
+    @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
+    uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
+    result = EigenMatrix()
+    ccall((:gsFunctionSet_deriv2_into,libgismo),Cvoid,
+      (Ptr{gsCBasis},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+      obj.ptr,uu.ptr,result.ptr)
+    return result;
+end
+
+"""
+Returns the evaluation of a single basis function
+...
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `u::Matrix{Cdouble}`: a matrix of points
+...
+"""
+function evalSingle(obj::Basis,i::Cint,u::Matrix{Cdouble})::EigenMatrix
+    @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
+    uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
+    result = EigenMatrix()
+    ccall((:gsBasis_evalSingle_into,libgismo),Cvoid,
+      (Ptr{gsCBasis},Cint,Ptr{gsCMatrix},Ptr{gsCMatrix},),
+      obj.ptr,i,uu.ptr,result.ptr)
+    return result;
+end
+
+"""
+Returns the derivative of a single basis function
+...
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `u::Matrix{Cdouble}`: a matrix of points
+...
+"""
+function derivSingle(obj::Basis,i::Cint,u::Matrix{Cdouble})::EigenMatrix
+    @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
+    uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
+    result = EigenMatrix()
+    ccall((:gsBasis_derivSingle_into,libgismo),Cvoid,
+      (Ptr{gsCBasis},Cint,Ptr{gsCMatrix},Ptr{gsCMatrix},),
+      obj.ptr,i,uu.ptr,result.ptr)
+    return result;
+end
+
+"""
+Returns the second derivative of a single basis function
+...
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `u::Matrix{Cdouble}`: a matrix of points
+...
+"""
+function deriv2Single(obj::Basis,i::Cint,u::Matrix{Cdouble})::EigenMatrix
+    @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
+    uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
+    result = EigenMatrix()
+    ccall((:gsBasisSet_deriv2Single_into,libgismo),Cvoid,
+      (Ptr{gsCBasis},Cint,Ptr{gsCMatrix},Ptr{gsCMatrix},),
+      obj.ptr,i,uu.ptr,result.ptr)
     return result;
 end
 
@@ -328,6 +423,45 @@ function eval(obj::Geometry,u::Matrix{Cdouble})::EigenMatrix
     uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
     result = EigenMatrix()
     ccall((:gsFunctionSet_eval_into,libgismo),Cvoid,
+      (Ptr{gsCGeometry},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+      obj.ptr,uu.ptr,result.ptr)
+    return result;
+end
+function Base.eval(obj::Geometry,u::Matrix{Cdouble})::EigenMatrix
+    return Gismo.eval(obj,u)
+end
+
+"""
+Returns the derivative of a geometry
+...
+# Arguments
+- `obj::Geometry`: a Gismo Geometry
+- `u::Matrix{Cdouble}`: a matrix of points
+...
+"""
+function deriv(obj::Geometry,u::Matrix{Cdouble})::EigenMatrix
+    @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
+    uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
+    result = EigenMatrix()
+    ccall((:gsFunctionSet_deriv_into,libgismo),Cvoid,
+      (Ptr{gsCGeometry},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+      obj.ptr,uu.ptr,result.ptr)
+    return result;
+end
+
+"""
+Returns the second derivative of a geometry
+...
+# Arguments
+- `obj::Geometry`: a Gismo Geometry
+- `u::Matrix{Cdouble}`: a matrix of points
+...
+"""
+function deriv2(obj::Geometry,u::Matrix{Cdouble})::EigenMatrix
+    @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
+    uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
+    result = EigenMatrix()
+    ccall((:gsFunctionSet_deriv2_into,libgismo),Cvoid,
       (Ptr{gsCGeometry},Ptr{gsCMatrix},Ptr{gsCMatrix},),
       obj.ptr,uu.ptr,result.ptr)
     return result;

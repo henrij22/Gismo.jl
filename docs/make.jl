@@ -1,6 +1,4 @@
-using Documenter, Example
-
-push!(LOAD_PATH, "../src/")
+using Documenter
 using Gismo
 
 DocMeta.setdocmeta!(Gismo,
@@ -10,6 +8,7 @@ DocMeta.setdocmeta!(Gismo,
 
 # List of subsection pages
 SUBSECTION_PAGES = [
+    "gsMatrix.md",
     "gsCore.md",
     "gsNurbs.md",
     "gsHSplines.md"

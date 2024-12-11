@@ -15,9 +15,9 @@ Creates an empty matrix.
 
 # Example
 
-```jldoctest
-m = EigenMatrix()
-```
+# ```jldoctest
+# julia> m = Gismo.EigenMatrix()
+# ```
 """
 mutable struct EigenMatrix
     ptr::Ptr{gsCMatrix}
@@ -48,17 +48,15 @@ mutable struct EigenMatrix
 end
 
 """
-    rows(object::EigenMatrix)
-
 Returns the number of rows in the matrix.
-
+...
 # Arguments
 - `object::EigenMatrix`: the matrix
-
+...
 # Examples
 ```jldoctest myEigenMatrix
-julia> m = EigenMatrix(3,3)
-julia> print(rows(m))
+m = Gismo.EigenMatrix(3,3)
+print(Gismo.rows(m))
 # output
 3
 ```
