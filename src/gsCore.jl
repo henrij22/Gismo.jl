@@ -9,7 +9,7 @@ export
     uniformRefine,
     refineElements,
     actives,
-    eval,
+    val,
     Geometry,
     basis,
     coefs,
@@ -219,7 +219,7 @@ Returns the evaluation of a basis
 - `u::Matrix{Cdouble}`: a matrix of points
 ...
 """
-function eval(obj::Basis,u::Matrix{Cdouble})::EigenMatrix
+function val(obj::Basis,u::Matrix{Cdouble})::EigenMatrix
     @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
     uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
     result = EigenMatrix()
@@ -228,9 +228,7 @@ function eval(obj::Basis,u::Matrix{Cdouble})::EigenMatrix
       obj.ptr,uu.ptr,result.ptr)
     return result;
 end
-function Base.eval(obj::Basis,u::Matrix{Cdouble})::EigenMatrix
-    return Gismo.eval(obj,u)
-end
+
 
 """
 Returns the derivative of a basis
@@ -418,7 +416,7 @@ Returns the evaluation of a geometry
 - `u::Matrix{Cdouble}`: a matrix of points
 ...
 """
-function eval(obj::Geometry,u::Matrix{Cdouble})::EigenMatrix
+function val(obj::Geometry,u::Matrix{Cdouble})::EigenMatrix
     @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
     uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
     result = EigenMatrix()
@@ -426,9 +424,6 @@ function eval(obj::Geometry,u::Matrix{Cdouble})::EigenMatrix
       (Ptr{gsCGeometry},Ptr{gsCMatrix},Ptr{gsCMatrix},),
       obj.ptr,uu.ptr,result.ptr)
     return result;
-end
-function Base.eval(obj::Geometry,u::Matrix{Cdouble})::EigenMatrix
-    return Gismo.eval(obj,u)
 end
 
 """
