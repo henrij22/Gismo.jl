@@ -1,6 +1,6 @@
 module Gismo
 
-libgismo = "/Users/none/gismo2/gismo/build/lib/libgismo"
+import gismo_jll:libgismo
 
 # Forward declaration of structs
 include("Declarations.jl")
