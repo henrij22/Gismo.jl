@@ -1,5 +1,7 @@
 export
-    OptionList
+    OptionList,
+    destroy!
+    show
     #= TODO =#
 
 ########################################################################
@@ -37,7 +39,7 @@ mutable struct OptionList
         return OptionList(opt)
     end
 
-    function destroy(opt::OptionList)
+    function destroy!(opt::OptionList)
         ccall((:gsOptionList_delete,libgismo),Cvoid,(Ptr{gsCOptionList},),opt.ptr)
     end
 end

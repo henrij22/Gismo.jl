@@ -1,9 +1,33 @@
 export
     KnotVector,
+    destroy!,
+    show,
+    size,
+    uSize,
+    numElements,
     BSplineBasis,
     BSpline,
     TensorBSplineBasis,
-    TensorBSpline
+    knots,
+    TensorBSpline,
+    NurbsBasis,
+    Nurbs,
+    TensorNurbsBasis,
+    TensorNurbs,
+    BSplineUnitInterval,
+    BSplineRectangle,
+    BSplineTrapezium,
+    BSplineSquare,
+    BSplineSquareGrid,
+    BSplineCube,
+    BSplineCubeGrid,
+    NurbsQuarterAnnulus,
+    NurbsAnnulus,
+    BSplineSaddle,
+    NurbsSphere,
+    NurbsCircle,
+    BSplineTriangle,
+    BSplineStar
     #= TODO =#
 
 ########################################################################
@@ -33,24 +57,24 @@ mutable struct KnotVector
     function KnotVector(knots::Ptr{gsCKnotVector},delete::Bool=true)
         b = new(knots)
         if (delete)
-            finalizer(destroy,b)
+            finalizer(destroy!,b)
         end
         return b
     end
 
     function KnotVector(filename::String)
         g = new(ccall((:gsCReadFile,libgismo),Ptr{gsCKnotVector},(Cstring,),filename) )
-        finalizer(destroy, g)
+        finalizer(destroy!, g)
         return g
     end
 
     function KnotVector(a::Vector{Float64})
         kv = new(ccall((:gsKnotVector_create,libgismo),Ptr{gsCKnotVector},(Ptr{Cdouble},Cint),a, length(a)) )
-        finalizer(destroy, kv)
+        finalizer(destroy!, kv)
         return kv
     end
 
-    function destroy(kv::KnotVector)
+    function destroy!(kv::KnotVector)
         ccall((:gsKnotVector_delete,libgismo),Cvoid,(Ptr{gsCKnotVector},),kv.ptr)
     end
 end

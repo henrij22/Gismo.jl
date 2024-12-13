@@ -1,15 +1,23 @@
 export
     Basis,
+    show,
+    destroy!,
     domainDim,
     targetDim,
     component,
     degree,
     numElements,
     size,
-    uniformRefine,
-    refineElements,
+    uniformRefine!,
+    refineElements!,
+    refine!,
     actives,
     val,
+    deriv,
+    deriv2,
+    evalSingle,
+    derivSingle,
+    deriv2Single,
     Geometry,
     basis,
     coefs,
@@ -17,8 +25,9 @@ export
     closest,
     invertPoints,
     MultiPatch,
-    addPatch,
-    patch
+    addPatch!,
+    patch,
+    MultiBasis
 
 ########################################################################
 # gsBasis
@@ -41,7 +50,7 @@ mutable struct Basis
     function Basis(basis::Ptr{gsCBasis},delete::Bool=true)
         b = new(basis)
         if (delete)
-            finalizer(destroy,b)
+            finalizer(destroy!,b)
         end
         return b
     end
@@ -55,7 +64,7 @@ mutable struct Basis
     """
     function Basis(filename::String)
         b = new(ccall((:gsCReadFile,libgismo),Ptr{gsCBasis},(Cstring,),filename) )
-        finalizer(destroy, b)
+        finalizer(destroy!, b)
         return b
     end
 
@@ -66,7 +75,7 @@ mutable struct Basis
     - `b::Basis`: a Gismo Basis
     ...
     """
-    function destroy(b::Basis)
+    function destroy!(b::Basis)
         ccall((:gsFunctionSet_delete,libgismo),Cvoid,(Ptr{gsCFunctionSet},),b.ptr)
     end
 end
@@ -155,7 +164,7 @@ Refines a basis
 - `dir::Cint=Int32(-1)`: the direction of the refinement
 ...
 """
-function uniformRefine(obj::Basis,numKnots::Cint=Int32(1),mul::Cint=Int32(1),dir::Cint=Int32(-1))::Nothing
+function uniformRefine!(obj::Basis,numKnots::Cint=Int32(1),mul::Cint=Int32(1),dir::Cint=Int32(-1))::Nothing
     ccall((:gsBasis_uniformRefine,libgismo),Cvoid,
             (Ptr{gsCBasis},Cint,Cint,Cint),obj.ptr,numKnots,mul,dir)
 end
@@ -168,7 +177,7 @@ Refines a basis
 - `boxes::Vector{Cint}`: the boxes to refine (in index format)
 ...
 """
-function refineElements(obj::Basis,boxes::Vector{Cint})::Nothing
+function refineElements!(obj::Basis,boxes::Vector{Cint})::Nothing
     @assert mod(length(boxes),2*domainDim(obj)+1)==0 "Boxes should have size 2*domainDim+1"
     ccall((:gsBasis_refineElements,libgismo),Cvoid,
             (Ptr{gsCBasis},Ptr{Cint},Cint),
@@ -183,7 +192,7 @@ Refines a basis
 - `boxes::Matrix{Cdouble}`: the boxes to refine (first column is the lower bound, second column is the upper bound)
 ...
 """
-function refine(obj::Basis,boxes::Matrix{Cdouble},refExt::Cint=Int32(0))::Nothing
+function refine!(obj::Basis,boxes::Matrix{Cdouble},refExt::Cint=Int32(0))::Nothing
     @assert Base.size(boxes,1)==domainDim(obj) "The boxes should have the same number of rows as the domain dimension"
     @assert Base.size(boxes,2)==2 "The boxes should have two columns"
     bb = EigenMatrix(Base.size(boxes,1), Base.size(boxes,2), pointer(boxes) )
@@ -343,18 +352,18 @@ mutable struct Geometry
         g = new(geom)
 
         if (delete)
-            finalizer(destroy,g)
+            finalizer(destroy!,g)
         end
         return g
     end
 
     function Geometry(filename::String)
         g = new(ccall((:gsCReadFile,libgismo),Ptr{gsCGeometry},(Cstring,),filename) )
-        finalizer(destroy, g)
+        finalizer(destroy!, g)
         return g
     end
 
-    function destroy(g::Geometry)
+    function destroy!(g::Geometry)
         ccall((:gsFunctionSet_delete,libgismo),Cvoid,(Ptr{gsCFunctionSet},),g.ptr)
     end
 end
@@ -528,17 +537,17 @@ mutable struct MultiPatch
 
     # function MultiPatch(filename::String)
     #     g = new(ccall((:gsCReadFile,libgismo),Ptr{gsCMultiPatch},(Cstring,),filename) )
-    #     finalizer(destroy, g)
+    #     finalizer(destroy!, g)
     #     return g
     # end
 
     function MultiPatch()
         m = new(ccall((:gsMultiPatch_create,libgismo),Ptr{gsCMultiPatch},(),) )
-        finalizer(destroy, m)
+        finalizer(destroy!, m)
         return m
     end
 
-    function destroy(m::MultiPatch)
+    function destroy!(m::MultiPatch)
         ccall((:gsFunctionSet_delete,libgismo),Cvoid,(Ptr{gsCFunctionSet},),m.ptr)
     end
 end
@@ -575,7 +584,7 @@ Returns the basis of a MultiPatch
 - `obj::MultiPatch`: a Gismo MultiPatch
 ...
 """
-function addPatch(obj::MultiPatch,geom::Geometry)::Nothing
+function addPatch!(obj::MultiPatch,geom::Geometry)::Nothing
     ccall((:gsMultiPatch_addPatch,libgismo),Cvoid,(Ptr{gsCMultiPatch},Ptr{gsCGeometry},),obj.ptr,geom.ptr)
 end
 
@@ -615,17 +624,17 @@ mutable struct MultiBasis
 
     # function MultiBasis(filename::String)
     #     g = new(ccall((:gsCReadFile,libgismo),Ptr{gsCMultiBasis},(Cstring,),filename) )
-    #     finalizer(destroy, g)
+    #     finalizer(destroy!, g)
     #     return g
     # end
 
     function MultiBasis()
         m = new(ccall((:gsMultiBasis_create,libgismo),Ptr{gsCMultiBasis},(),) )
-        finalizer(destroy, m)
+        finalizer(destroy!, m)
         return m
     end
 
-    function destroy(m::MultiBasis)
+    function destroy!(m::MultiBasis)
         ccall((:gsMultiBasis_delete,libgismo),Cvoid,(Ptr{gsCFunctionSet},),m.ptr)
     end
 end

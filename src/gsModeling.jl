@@ -1,5 +1,14 @@
 export
-    Fitting
+    Fitting,
+    destroy!,
+    compute!,
+    parameterCorrection!,
+    computeErrors!,
+    minPointError,
+    maxPointError,
+    pointWiseErrors,
+    numPointsBelow,
+    result
     #= TODO =#
 
 ########################################################################
@@ -23,7 +32,7 @@ mutable struct Fitting
     function Fitting(opt::Ptr{gsCFitting},delete::Bool=true)::Fitting
         b = new(opt)
         if (delete)
-            finalizer(destroy,b)
+            finalizer(destroy!,b)
         end
         return b
     end
@@ -45,14 +54,14 @@ mutable struct Fitting
         return Fitting(fitter)
     end
 
-    function destroy(fit::Fitting)
+    function destroy!(fit::Fitting)
         ccall((:gsFitting_delete,libgismo),Cvoid,(Ptr{gsCFitting},),fit.ptr)
     end
 end
 
 
 """
-compute(fit::Fitting, lambda::Cdouble=0.0)
+compute!(fit::Fitting, lambda::Cdouble=0.0)
 Computes the least squares fit
 ...
 # Arguments
@@ -60,12 +69,12 @@ Computes the least squares fit
 - `lambda::Cdouble`: the value to assign to the lambda ridge parameter
 ...
 """
-function compute(fit::Fitting, lambda::Cdouble=0.0)
+function compute!(fit::Fitting, lambda::Cdouble=0.0)
     ccall((:gsFitting_compute,libgismo),Cvoid,(Ptr{gsCFitting},Cdouble),fit.ptr,lambda)
 end
 
 """
-parameterCorrection(fit::Fitting, accuracy::Cdouble, maxIter::Cint, tol0rth::Cdouble)
+parameterCorrection!(fit::Fitting, accuracy::Cdouble, maxIter::Cint, tol0rth::Cdouble)
 Performs the parameters corrections step
 ...
 # Arguments
@@ -75,21 +84,21 @@ Performs the parameters corrections step
 - `tol0rth::Cdouble`: The desired value of the tolleance
 ...
 """
-function parameterCorrection(fit::Fitting, accuracy::Cdouble, maxIter::Cint, tol0rth::Cdouble)
+function parameterCorrection!(fit::Fitting, accuracy::Cdouble, maxIter::Cint, tol0rth::Cdouble)
     @assert maxIter >= 0 "Fitting: cannot have a negative number of iterations!"
     @assert accuracy >= 0 "Fitting: cannot have a negative accuracy!"
     ccall((:gsFitting_parameterCorrection,libgismo),Cvoid,(Ptr{gsCFitting},Cdouble,Cint,Cdouble),fit.ptr,accuracy,maxIter,tol0rth)
 end
 
 """
-computeErrors(fit::Fitting)
+computeErrors!(fit::Fitting)
 Computes the error for each point
 ...
 # Arguments
 - `fit::Fitting`: a fitting structure
 ...
 """
-function computeErrors(fit::Fitting)
+function computeErrors!(fit::Fitting)
     ccall((:gsFitting_computeErrors,libgismo),Cvoid,(Ptr{gsCFitting},),fit.ptr)
 end
 
