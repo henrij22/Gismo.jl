@@ -1,3 +1,6 @@
+export
+    EigenMatrix
+
 ########################################################################
 # gsMatrix
 ########################################################################
@@ -15,8 +18,9 @@ Creates an empty matrix.
 
 # Example
 
-```jldoctest
+```jldoctest output=(false)
 m = EigenMatrix()
+# output
 ```
 """
 mutable struct EigenMatrix
@@ -57,8 +61,8 @@ Returns the number of rows in the matrix.
 
 # Examples
 ```jldoctest myEigenMatrix
-julia> m = EigenMatrix(3,3)
-julia> print(rows(m))
+m = EigenMatrix(3,3)
+print(Gismo.rows(m))
 # output
 3
 ```

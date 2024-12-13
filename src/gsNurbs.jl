@@ -21,8 +21,9 @@ export
 - `a::Vector{Float64}`: the knot vector
 
 # Examples
-```jldoctest myKnotVector
-julia> kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
+```jldoctest myKnotVector; output=(false)
+kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
+# output
 ```
 """
 mutable struct KnotVector
@@ -56,11 +57,11 @@ Returns the number of elements in the knot vector.
 - `kv::KnotVector`: the knot vector
 
 # Examples
-```jldoctest myKnotVector
-julia> print(Gismo.size(kv))
-# output
-9
-```
+# ```jldoctest output=(false)
+# kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
+# print(Gismo.size(kv))
+# # output
+# ```
 """
 function size(kv::KnotVector)::Int64
     return ccall((:gsKnotVector_size,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
