@@ -3,6 +3,9 @@
 # Gismo.jl: Geometry + Simulation Modules meet Julia
 The Gismo.jl package provides an interface to the [Geometry + Simulation Modules](https://github.com/gismo/gismo) inside Julia.
 
+## Getting started
+We provide a hand full of examples in the `examples` directory, which can be run after [installation](#installation) of the package.
+
 ## Installation
 There are two ways to install Gismo.jl: via Julia's package manager, or by linking it to a local build of G+Smo.
 
