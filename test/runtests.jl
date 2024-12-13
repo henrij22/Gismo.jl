@@ -65,8 +65,8 @@ using Test
             points2D = zeros(2,N*N)
             points2D[1,:] = repeat(points1D, N)
             points2D[2,:] = repeat(points1D, inner=N)
-            @test_nowarn(ev = Gismo.asMatrix(Gismo.eval(TB,points2D)))
-            @test_nowarn(ev = Gismo.asMatrix(Gismo.eval(THB,points2D)))
+            @test_nowarn(ev = Gismo.asMatrix(Gismo.val(TB,points2D)))
+            @test_nowarn(ev = Gismo.asMatrix(Gismo.val(THB,points2D)))
         end
     end
 end

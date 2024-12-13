@@ -10,7 +10,7 @@ coefs = rand(Gismo.size(TBB),3)
 TB = Gismo.TensorBSpline(TBB,coefs)
 
 display(@benchmark normal(TB,rand(Float64, (2, 1))))
-display(@benchmark Gismo.eval(TB,rand(Float64, (2, 1))))
+display(@benchmark Gismo.val(TB,rand(Float64, (2, 1))))
 
 
 
