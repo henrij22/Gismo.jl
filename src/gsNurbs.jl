@@ -66,11 +66,10 @@ Returns the number of elements in the knot vector.
 - `kv::KnotVector`: the knot vector
 
 # Examples
-# ```jldoctest myKnotVector
+# ```jldoctest output=(false)
 # kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
-# print(Gismo.uSize(kv))
+# print(Gismo.size(kv))
 # # output
-# 9
 # ```
 """
 function size(kv::KnotVector)::Int64
