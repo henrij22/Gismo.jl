@@ -1,4 +1,11 @@
-using Documenter, Example
+# Check dependencies
+neededPackages = [:Documenter, :Example, :gismo_jll]
+using Pkg;
+
+for neededpackage in neededPackages
+    (String(neededpackage) in keys(Pkg.project().dependencies)) || Pkg.add(String(neededpackage))
+    @eval using $neededpackage
+end
 
 push!(LOAD_PATH, "../src/")
 using Gismo
