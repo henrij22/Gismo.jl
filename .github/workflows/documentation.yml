@@ -36,6 +36,7 @@ jobs:
           name: Documentation
           commit: main
           tag: doc
+          body: "This release generates the Julia documentation."
           artifacts: doc.zip
           allowUpdates: true
           artifactErrorsFailBuild: true
