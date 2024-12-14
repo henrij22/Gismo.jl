@@ -36,9 +36,11 @@ jobs:
           name: Documentation
           commit: main
           tag: doc
-          body: "This release generates the Julia documentation."
+          body: "This release generates the Julia documentation. Source code tarball should be ignored"
           artifacts: doc.zip
           allowUpdates: true
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
           artifactErrorsFailBuild: true
           draft: false
           prerelease: false
