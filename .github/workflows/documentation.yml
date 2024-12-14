@@ -1,7 +1,6 @@
 name: Documentation
 
 on:
-on:
   create:
     tags: '*'
   pull_request:
