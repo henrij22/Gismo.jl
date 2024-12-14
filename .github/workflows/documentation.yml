@@ -37,6 +37,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: Documentation
+          commit: main
+          tag: ${{ github.ref }}
           artifacts: doc.zip
           allowUpdates: true
           artifactErrorsFailBuild: true
