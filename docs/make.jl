@@ -28,5 +28,8 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Modules" => SUBSECTION_PAGES
-    ]
+    ],
+    format=Documenter.HTML(;
+        footer = nothing
+    )
 )
