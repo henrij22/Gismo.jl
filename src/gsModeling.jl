@@ -46,7 +46,7 @@ mutable struct Fitting
     - `basis::Basis`: a Basis structure containing the desired basis
     ...
     """
-    function Fitting(parValues::Matrix{Cdouble}, pts::Matrix{Cdouble}, basis::Basis)::Fitting
+    function Fitting(parValues::AbstractMatrix{Cdouble}, pts::AbstractMatrix{Cdouble}, basis::Basis)::Fitting
         @assert Base.size(parValues,2) == Base.size(pts,2) "Fitting: parValues and points must have the same number of columns"
         param_values = EigenMatrix(Base.size(parValues,1),Base.size(parValues,2),pointer(parValues))
         points = EigenMatrix(Base.size(pts,1),Base.size(pts,2),pointer(pts))
@@ -84,7 +84,7 @@ Performs the parameters corrections step
 - `tol0rth::Cdouble`: The desired value of the tolleance
 ...
 """
-function parameterCorrection!(fit::Fitting, accuracy::Cdouble, maxIter::Cint, tol0rth::Cdouble)
+function parameterCorrection!(fit::Fitting, accuracy::Cdouble=1.0, maxIter::Cint=Cint(10), tol0rth::Cdouble=1e-6)
     @assert maxIter >= 0 "Fitting: cannot have a negative number of iterations!"
     @assert accuracy >= 0 "Fitting: cannot have a negative accuracy!"
     ccall((:gsFitting_parameterCorrection,libgismo),Cvoid,(Ptr{gsCFitting},Cdouble,Cint,Cdouble),fit.ptr,accuracy,maxIter,tol0rth)

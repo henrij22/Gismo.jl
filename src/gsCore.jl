@@ -279,6 +279,7 @@ Returns the evaluation of a single basis function
 ...
 # Arguments
 - `obj::Basis`: a Gismo Basis
+- `i::Cint`: the index of the basis function
 - `u::Matrix{Cdouble}`: a matrix of points
 ...
 """
@@ -297,6 +298,7 @@ Returns the derivative of a single basis function
 ...
 # Arguments
 - `obj::Basis`: a Gismo Basis
+- `i::Cint`: the index of the basis function
 - `u::Matrix{Cdouble}`: a matrix of points
 ...
 """
@@ -315,6 +317,7 @@ Returns the second derivative of a single basis function
 ...
 # Arguments
 - `obj::Basis`: a Gismo Basis
+- `i::Cint`: the index of the basis function
 - `u::Matrix{Cdouble}`: a matrix of points
 ...
 """
