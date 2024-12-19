@@ -74,17 +74,17 @@ function compute!(fit::Fitting, lambda::Cdouble=0.0)
 end
 
 """
-parameterCorrection!(fit::Fitting, accuracy::Cdouble, maxIter::Cint, tol0rth::Cdouble)
+parameterCorrection!(fit::Fitting, accuracy::Cdouble, maxIter::Int, tol0rth::Cdouble)
 Performs the parameters corrections step
 
 # Arguments
 - `fit::Fitting`: a fitting structure
 - `accuracy::Cdouble`: The desired accuracy
-- `maxIter::Cint`: The desired number of iterations
+- `maxIter::Int`: The desired number of iterations
 - `tol0rth::Cdouble`: The desired value of the tolleance
 
 """
-function parameterCorrection!(fit::Fitting, accuracy::Cdouble=1.0, maxIter::Cint=Cint(10), tol0rth::Cdouble=1e-6)
+function parameterCorrection!(fit::Fitting, accuracy::Cdouble=1.0, maxIter::Int=Int(10), tol0rth::Cdouble=1e-6)
     @assert maxIter >= 0 "Fitting: cannot have a negative number of iterations!"
     @assert accuracy >= 0 "Fitting: cannot have a negative accuracy!"
     ccall((:gsFitting_parameterCorrection,libgismo),Cvoid,(Ptr{gsCFitting},Cdouble,Cint,Cdouble),fit.ptr,accuracy,maxIter,tol0rth)
@@ -149,7 +149,7 @@ function pointWiseErrors(fit::Fitting)::Ptr{Cdouble}
 end
 
 """
-numPointsBelow(fit::Fitting, threshold::Cdouble)::Cint
+numPointsBelow(fit::Fitting, threshold::Cdouble)::Int
 Returns the number of points where the error is below the threshold
 
 # Arguments
@@ -157,10 +157,10 @@ Returns the number of points where the error is below the threshold
 - `threshold::Cdouble`: The desired threshold
 
 # Return
-- `number_pts_blw::Cint`: number of points where the error is below the given threshold
+- `number_pts_blw::Int`: number of points where the error is below the given threshold
 
 """
-function numPointsBelow(fit::Fitting, threshold::Cdouble)::Cint
+function numPointsBelow(fit::Fitting, threshold::Cdouble)::Int
     @assert threshold >= 0 "The threshold must be a positive real number!"
     number_pts_blw=ccall((:gsFitting_numPointsBelow,libgismo),Cint,(Ptr{gsCFitting},Cdouble),fit.ptr,threshold)
     return number_pts_blw

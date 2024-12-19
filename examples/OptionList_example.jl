@@ -11,7 +11,7 @@ Gismo.setSwitch(gsOptionList,"c",false)
 Gismo.setString(gsOptionList,"d","two")
 println(gsOptionList)
 
-int::Int64 = Gismo.getInt(gsOptionList,"a")
+int::Int = Gismo.getInt(gsOptionList,"a")
 println("Integer read from option list: ",int)
 double::Float64 = Gismo.getReal(gsOptionList,"b")
 println("Double read from option list: ",double)

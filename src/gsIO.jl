@@ -115,7 +115,7 @@ Add an integer to the option list
 # Arguments
 - `opt::OptionList`: the option list
 - `key::String`: the key
-- `int::Int64`: the value
+- `int::Int`: the value
 - `desc::String`: the description
 
 # Examples
@@ -125,7 +125,7 @@ addInt(opt,"key",1,"description")
 # output
 ```
 """
-function addInt(opt::OptionList,key::String,int::Int64,desc::String="")
+function addInt(opt::OptionList,key::String,int::Int,desc::String="")
     ccall((:gsOptionList_addInt,libgismo),Cvoid,(Ptr{gsCOptionList},Cstring,Cstring,Cint),opt.ptr,key,desc,int)
 end
 
@@ -200,7 +200,7 @@ Get an integer from the option list
 - `key::String`: the key
 
 # Return
-- `int::Cint`: the value
+- `int::Int`: the value
 
 # Examples
 ```jldoctest
@@ -209,7 +209,7 @@ println(getInt(opt,"key1"))
 # output
 1
 """
-function getInt(opt::OptionList,key::String)::Cint
+function getInt(opt::OptionList,key::String)::Int
     return ccall((:gsOptionList_getInt,libgismo),Cint,(Ptr{gsCOptionList},Cstring),opt.ptr,key)
 end
 
@@ -286,7 +286,7 @@ Set an integer to the option list
 # Arguments
 - `opt::OptionList`: the option list
 - `key::String`: the key
-- `int::Cint`: the value
+- `int::Int`: the value
 
 # Εxamples
 ```jldoctest output=(false)
@@ -295,7 +295,7 @@ setInt(opt,"key",2)
 # output
 ```
 """
-function setInt(opt::OptionList,key::String,int::Int64)
+function setInt(opt::OptionList,key::String,int::Int)
     ccall((:gsOptionList_setInt,libgismo),Cvoid,(Ptr{gsCOptionList},Cstring,Cint),opt.ptr,key,int)
 end
 

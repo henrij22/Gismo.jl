@@ -42,14 +42,14 @@ mutable struct EigenMatrix
         return m
     end
 
-    function EigenMatrix(r::Int64,c::Int64)
+    function EigenMatrix(r::Int,c::Int)
         m = new(ccall((:gsMatrix_create_rc,libgismo),Ptr{gsCMatrix},
                      (Cint,Cint), r, c) )
         finalizer(destroy!, m)
         return m
     end
 
-    function EigenMatrix(r::Int64,c::Int64, data::Ptr{Cdouble})
+    function EigenMatrix(r::Int,c::Int, data::Ptr{Cdouble})
         m = new(ccall((:gsMatrix_create_rcd,libgismo),Ptr{gsCMatrix},
                      (Cint,Cint,Ptr{Cdouble},), r, c, data) )
         finalizer(destroy!, m)
@@ -75,7 +75,7 @@ print(Gismo.rows(m))
 3
 ```
 """
-function rows(object::EigenMatrix)::Int64
+function rows(object::EigenMatrix)::Int
     return ccall((:gsMatrix_rows,libgismo),Cint,(Ptr{gsCMatrix},),object.ptr)
 end
 
@@ -93,7 +93,7 @@ print(Gismo.cols(m))
 3
 ```
 """
-function cols(object::EigenMatrix)::Int64
+function cols(object::EigenMatrix)::Int
     return ccall((:gsMatrix_cols,libgismo),Cint,(Ptr{gsCMatrix},),object.ptr)
 end
 
@@ -187,10 +187,10 @@ mutable struct EigenMatrixInt
     Creates an empty matrix
 
     # Arguments
-    - `r::Int64`: the number of rows
-    - `c::Int64`: the number of columns
+    - `r::Int`: the number of rows
+    - `c::Int`: the number of columns
     """
-    function EigenMatrixInt(r::Int64,c::Int64)
+    function EigenMatrixInt(r::Int,c::Int)
         m = new(ccall((:gsMatrixInt_create_rc,libgismo),Ptr{gsCMatrixInt},
                      (Cint,Cint), r, c) )
         finalizer(destroy!, m)
@@ -201,11 +201,11 @@ mutable struct EigenMatrixInt
     Creates a matrix from a pointer to the data
 
     # Arguments
-    - `r::Int64`: the number of rows
-    - `c::Int64`: the number of columns
+    - `r::Int`: the number of rows
+    - `c::Int`: the number of columns
     - `data::Ptr{Cint}`: the pointer to the data
     """
-    function EigenMatrixInt(r::Int64,c::Int64, data::Ptr{Cint})
+    function EigenMatrixInt(r::Int,c::Int, data::Ptr{Cint})
         m = new(ccall((:gsMatrixInt_create_rcd,libgismo),Ptr{gsCMatrixInt},
                      (Cint,Cint,Ptr{Cint},), r, c, data) )
         finalizer(destroy!, m)
@@ -231,7 +231,7 @@ print(Gismo.rows(m))
 3
 ```
 """
-function rows(object::EigenMatrixInt)::Int64
+function rows(object::EigenMatrixInt)::Int
     return ccall((:gsMatrixInt_rows,libgismo),Cint,(Ptr{gsCMatrixInt},),object.ptr)
 end
 
@@ -249,7 +249,7 @@ print(Gismo.cols(m))
 3
 ```
 """
-function cols(object::EigenMatrixInt)::Int64
+function cols(object::EigenMatrixInt)::Int
     return ccall((:gsMatrixInt_cols,libgismo),Cint,(Ptr{gsCMatrixInt},),object.ptr)
 end
 

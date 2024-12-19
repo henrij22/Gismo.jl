@@ -95,10 +95,10 @@ kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
 # output
 ```
 """
-function size(kv::KnotVector)::Int64
+function size(kv::KnotVector)::Int
     return ccall((:gsKnotVector_size,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
 end
-function Base.size(kv::KnotVector)::Int64
+function Base.size(kv::KnotVector)::Int
     return Gismo.size(kv)
 end
 
@@ -116,7 +116,7 @@ print(uSize(kv))
 3
 ```
 """
-function uSize(kv::KnotVector)::Int64
+function uSize(kv::KnotVector)::Int
     return ccall((:gsKnotVector_uSize,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
 end
 
@@ -134,7 +134,7 @@ print(numElements(kv))
 2
 ```
 """
-function numElements(kv::KnotVector)::Int64
+function numElements(kv::KnotVector)::Int
     return ccall((:gsKnotVector_numElements,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
 end
 
@@ -221,7 +221,7 @@ function TensorBSplineBasis(kv::Vararg{KnotVector})::Basis
     return Basis(b)
 end
 
-function knots(basis::Basis, dir::Int64)::KnotVector
+function knots(basis::Basis, dir::Int)::KnotVector
     if (domainDim(basis)==1)
         kv = ccall((:gsBSplineBasis_knots,libgismo),Ptr{gsCKnotVector},(Ptr{gsCBasis},Cint),basis.ptr,dir)
     else
@@ -385,7 +385,7 @@ end
 Create a unit interval represented by a B-spline
 
 # Arguments
-- `deg::Int64`: the degree of the B-spline
+- `deg::Int`: the degree of the B-spline
 
 # Examples
 ```jldoctest output=(false)
@@ -393,7 +393,7 @@ g = BSplineUnitInterval(2)
 # output
 ```
 """
-function BSplineUnitInterval(deg::Int64)::Geometry
+function BSplineUnitInterval(deg::Int)::Geometry
     g = ccall((:gsNurbsCreator_BSplineUnitInterval,libgismo),Ptr{gsCGeometry},(Cint,),deg)
     return Geometry(g)
 end
@@ -473,8 +473,8 @@ end
 Create a square grid represented by a multi-patch
 
 # Arguments
-- `n::Int64`: the number of patches in x-direction
-- `m::Int64`: the number of patches in y-direction
+- `n::Int`: the number of patches in x-direction
+- `m::Int`: the number of patches in y-direction
 - `r::Cdouble`: the radius of the square
 - `lx::Cdouble`: the x-coordinate of the center
 - `ly::Cdouble`: the y-coordinate of the center
@@ -485,8 +485,8 @@ g = BSplineSquareGrid(2,2,1.0,0.0,0.0)
 # output
 ```
 """
-function BSplineSquareGrid(n::Int64,
-                           m::Int64,
+function BSplineSquareGrid(n::Int,
+                           m::Int,
                            r::Cdouble=1.0,
                            lx::Cdouble=0.0,
                            ly::Cdouble=0.0)::MultiPatch
@@ -521,9 +521,9 @@ end
 Create a cube grid represented by a multi-patch
 
 # Arguments
-- `n::Int64`: the number of patches in x-direction
-- `m::Int64`: the number of patches in y-direction
-- `p::Int64`: the number of patches in z-direction
+- `n::Int`: the number of patches in x-direction
+- `m::Int`: the number of patches in y-direction
+- `p::Int`: the number of patches in z-direction
 - `r::Cdouble`: the radius of the cube
 - `lx::Cdouble`: the x-coordinate of the center
 - `ly::Cdouble`: the y-coordinate of the center
@@ -535,9 +535,9 @@ g = BSplineCubeGrid(2,2,2,1.0,0.0,0.0,0.0)
 # output
 ```
 """
-function BSplineCubeGrid(n::Int64,
-                         m::Int64,
-                         p::Int64,
+function BSplineCubeGrid(n::Int,
+                         m::Int,
+                         p::Int,
                          r::Cdouble=1.0,
                          lx::Cdouble=0.0,
                          ly::Cdouble=0.0,
@@ -665,7 +665,7 @@ end
 Create a star represented by a multi-patch
 
 # Arguments
-- `N::Int64`: the number of arms
+- `N::Int`: the number of arms
 - `R0::Cdouble`: the outer radius
 - `R1::Cdouble`: the inner radius
 
@@ -675,7 +675,7 @@ g = BSplineStar(3,1.0,0.5)
 # output
 ```
 """
-function BSplineStar(N::Int64=3,
+function BSplineStar(N::Int=3,
                      R0::Cdouble=1.0,
                      R1::Cdouble=0.5)::MultiPatch
     g = ccall((:gsNurbsCreator_BSplineStar,libgismo),Ptr{gsCMultiPatch},(Cint,Cdouble,Cdouble),N,R0,R1)
