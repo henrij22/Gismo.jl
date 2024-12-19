@@ -5,7 +5,7 @@ println(options)
 gsOptionList = OptionList(options)
 println(gsOptionList)
 
-Gismo.setInt(gsOptionList,"a",Int32(2))
+Gismo.setInt(gsOptionList,"a",2)
 Gismo.setReal(gsOptionList,"b",2.0)
 Gismo.setSwitch(gsOptionList,"c",false)
 Gismo.setString(gsOptionList,"d","two")

@@ -34,7 +34,7 @@ import Gismo.size
             @test_nowarn(uniformRefine!(THB))
             boxes = Matrix{Cdouble}([0.0 0.5; 0.0 0.5])
             @test_nowarn(refine!(THB,boxes))
-            boxes = Vector{Int32}([1,0,0,2,2])
+            boxes = Vector{Int}([1,0,0,2,2])
             @test_nowarn(refineElements!(THB,boxes))
         end
 

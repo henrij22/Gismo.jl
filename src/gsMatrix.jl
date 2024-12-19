@@ -260,7 +260,7 @@ Returns a pointer to the data of the matrix.
 - `object::EigenMatrixInt`: the matrix
 
 """
-function data(object::EigenMatrixInt)::Ptr{Cint}
+function data(object::EigenMatrixInt)::Ptr{Int}
     return ccall((:gsMatrixInt_data,libgismo),Ptr{Cint},(Ptr{gsCMatrixInt},),object.ptr)
 end
 
@@ -271,7 +271,7 @@ Returns the matrix as a Julia matrix (transfers ownership).
 - `object::EigenMatrixInt`: the matrix
 
 """
-function toMatrixInt(object::EigenMatrixInt)::MatrixInt{Cint}
+function toMatrixInt(object::EigenMatrixInt)::MatrixInt{Int}
     return unsafe_wrap(Array, data(object), (rows(object),cols(object)); own = true)
 end
 
@@ -282,7 +282,7 @@ Returns the matrix as a Julia vector (transfers ownership).
 - `object::EigenMatrixInt`: the matrix
 
 """
-function toVectorInt(object::EigenMatrixInt)::Vector{Cint}
+function toVectorInt(object::EigenMatrixInt)::Vector{Int}
     return unsafe_wrap(Array, data(object), (rows(object)); own = true)
 end
 
@@ -293,7 +293,7 @@ Returns the matrix as a Julia matrix.
 - `object::EigenMatrixInt`: the matrix
 
 """
-function asMatrixInt(object::EigenMatrixInt)::MatrixInt{Cint}
+function asMatrixInt(object::EigenMatrixInt)::MatrixInt{Int}
     return unsafe_wrap(Array, data(object), (rows(object),cols(object)); own = false)
 end
 
@@ -304,7 +304,7 @@ Returns the matrix as a Julia vector.
 - `object::EigenMatrixInt`: the matrix
 
 """
-function asVectorInt(object::EigenMatrixInt)::Vector{Cint}
+function asVectorInt(object::EigenMatrixInt)::Vector{Int}
     return unsafe_wrap(Array, data(object), (rows(object)); own = false)
 end
 

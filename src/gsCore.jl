@@ -87,7 +87,7 @@ Returns the domain dimension of a basis
 - `object::Basis`: a Gismo Basis
 
 """
-function domainDim(object::Basis)::Cint
+function domainDim(object::Basis)::Int
     return ccall((:gsFunctionSet_domainDim,libgismo),Cint,(Ptr{gsCFunctionSet},),object.ptr)
 end
 
@@ -98,7 +98,7 @@ Returns the target dimension of a basis
 - `object::Basis`: a Gismo Basis
 
 """
-function targetDim(object::Basis)::Cint
+function targetDim(object::Basis)::Int
     return ccall((:gsFunctionSet_targetDim,libgismo),Cint,(Ptr{gsCFunctionSet},),object.ptr)
 end
 
@@ -109,10 +109,10 @@ Returns the component of a basis
 
 # Arguments
 - `obj::Basis`: a Gismo Basis
-- `i::Cint`: the index of the component
+- `i::Int`: the index of the component
 
 """
-function component(obj::Basis,i::Cint)::Basis
+function component(obj::Basis,i::Int)::Basis
     b = ccall((:gsBasis_component,libgismo),Ptr{gsCBasis},(Ptr{gsCBasis},Cint),obj.ptr,i)
     return Basis(b)
 end
@@ -122,10 +122,10 @@ Returns the degree of a basis
 
 # Arguments
 - `obj::Basis`: a Gismo Basis
-- `i::Cint`: the index of the component
+- `i::Int`: the index of the component
 
 """
-function degree(obj::Basis,i::Cint)::Cint
+function degree(obj::Basis,i::Int)::Int
     return ccall((:gsBasis_degree,libgismo),Cint,(Ptr{gsCBasis},Cint),obj.ptr,i)
 end
 
@@ -136,7 +136,7 @@ Returns the number of elements of a basis
 - `obj::Basis`: a Gismo Basis
 
 """
-function numElements(obj::Basis)::Cint
+function numElements(obj::Basis)::Int
     return ccall((:gsBasis_numElements,libgismo),Cint,(Ptr{gsCBasis},),obj.ptr)
 end
 
@@ -147,10 +147,10 @@ Returns the size of a basis
 - `obj::Basis`: a Gismo Basis
 
 """
-function size(obj::Basis)::Cint
+function size(obj::Basis)::Int
     return ccall((:gsBasis_size,libgismo),Cint,(Ptr{gsCBasis},),obj.ptr)
 end
-function Base.size(obj::Basis)::Cint
+function Base.size(obj::Basis)::Int
     return Gismo.size(obj)
 end
 
@@ -159,12 +159,12 @@ Refines a basis
 
 # Arguments
 - `obj::Basis`: a Gismo Basis
-- `numKnots::Cint=Int32(1)`: the number of knots to add
-- `mul::Cint=Int32(1)`: the multiplicity of the knots
-- `dir::Cint=Int32(-1)`: the direction of the refinement
+- `numKnots::Int=Int(1)`: the number of knots to add
+- `mul::Int=Int(1)`: the multiplicity of the knots
+- `dir::Int=Int(-1)`: the direction of the refinement
 
 """
-function uniformRefine!(obj::Basis,numKnots::Cint=Int32(1),mul::Cint=Int32(1),dir::Cint=Int32(-1))::Nothing
+function uniformRefine!(obj::Basis,numKnots::Int=Int(1),mul::Int=Int(1),dir::Int=Int(-1))::Nothing
     ccall((:gsBasis_uniformRefine,libgismo),Cvoid,
             (Ptr{gsCBasis},Cint,Cint,Cint),obj.ptr,numKnots,mul,dir)
 end
@@ -177,7 +177,7 @@ Refines a basis
 - `boxes::Vector{Cint}`: the boxes to refine (in index format)
 
 """
-function refineElements!(obj::Basis,boxes::Vector{Cint})::Nothing
+function refineElements!(obj::Basis,boxes::Vector{Int})::Nothing
     @assert mod(length(boxes),2*domainDim(obj)+1)==0 "Boxes should have size 2*domainDim+1"
     ccall((:gsBasis_refineElements,libgismo),Cvoid,
             (Ptr{gsCBasis},Ptr{Cint},Cint),
@@ -190,10 +190,10 @@ Refines a basis
 # Arguments
 - `obj::Basis`: a Gismo Basis
 - `boxes::Matrix{Cdouble}`: the boxes to refine (first column is the lower bound, second column is the upper bound)
-- `refExt::Cint=Int32(0)`: the refinement extension
+- `refExt::Int=Int(0)`: the refinement extension
 
 """
-function refine!(obj::Basis,boxes::Matrix{Cdouble},refExt::Cint=Int32(0))::Nothing
+function refine!(obj::Basis,boxes::Matrix{Cdouble},refExt::Int=Int(0))::Nothing
     @assert Base.size(boxes,1)==domainDim(obj) "The boxes should have the same number of rows as the domain dimension"
     @assert Base.size(boxes,2)==2 "The boxes should have two columns"
     bb = EigenMatrix(Base.size(boxes,1), Base.size(boxes,2), pointer(boxes) )
@@ -280,11 +280,11 @@ Returns the evaluation of a single basis function
 
 # Arguments
 - `obj::Basis`: a Gismo Basis
-- `i::Cint`: the index of the basis function
+- `i::Int`: the index of the basis function
 - `u::Matrix{Cdouble}`: a matrix of points
 
 """
-function evalSingle(obj::Basis,i::Cint,u::Matrix{Cdouble})::EigenMatrix
+function evalSingle(obj::Basis,i::Int,u::Matrix{Cdouble})::EigenMatrix
     @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
     uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
     result = EigenMatrix()
@@ -299,11 +299,11 @@ Returns the derivative of a single basis function
 
 # Arguments
 - `obj::Basis`: a Gismo Basis
-- `i::Cint`: the index of the basis function
+- `i::Int`: the index of the basis function
 - `u::Matrix{Cdouble}`: a matrix of points
 
 """
-function derivSingle(obj::Basis,i::Cint,u::Matrix{Cdouble})::EigenMatrix
+function derivSingle(obj::Basis,i::Int,u::Matrix{Cdouble})::EigenMatrix
     @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
     uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
     result = EigenMatrix()
@@ -318,11 +318,11 @@ Returns the second derivative of a single basis function
 
 # Arguments
 - `obj::Basis`: a Gismo Basis
-- `i::Cint`: the index of the basis function
+- `i::Int`: the index of the basis function
 - `u::Matrix{Cdouble}`: a matrix of points
 
 """
-function deriv2Single(obj::Basis,i::Cint,u::Matrix{Cdouble})::EigenMatrix
+function deriv2Single(obj::Basis,i::Int,u::Matrix{Cdouble})::EigenMatrix
     @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
     uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
     result = EigenMatrix()
@@ -379,7 +379,7 @@ Return the domain dimension of a geometry
 - `object::Geometry`: a Gismo Geometry
 
 """
-function domainDim(object::Geometry)::Cint
+function domainDim(object::Geometry)::Int
     return ccall((:gsFunctionSet_domainDim,libgismo),Cint,(Ptr{gsCFunctionSet},),object.ptr)
 end
 
@@ -390,7 +390,7 @@ Returns the target dimension of a geometry
 - `object::Geometry`: a Gismo Geometry
 
 """
-function targetDim(object::Geometry)::Cint
+function targetDim(object::Geometry)::Int
     return ccall((:gsFunctionSet_targetDim,libgismo),Cint,(Ptr{gsCFunctionSet},),object.ptr)
 end
 
@@ -572,7 +572,7 @@ Adds a patch to a MultiPatch
 - `geom::Geometry`: a Gismo Geometry
 
 """
-function domainDim(object::MultiPatch)::Cint
+function domainDim(object::MultiPatch)::Int
     return ccall((:gsFunctionSet_domainDim,libgismo),Cint,(Ptr{gsCFunctionSet},),object.ptr)
 end
 
@@ -583,7 +583,7 @@ Returns the target dimension of a MultiPatch
 - `object::MultiPatch`: a Gismo MultiPatch
 
 """
-function targetDim(object::MultiPatch)::Cint
+function targetDim(object::MultiPatch)::Int
     return ccall((:gsFunctionSet_targetDim,libgismo),Cint,(Ptr{gsCFunctionSet},),object.ptr)
 end
 

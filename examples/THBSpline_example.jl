@@ -8,7 +8,7 @@ print("The size of the basis is: ",size(TBB),"\n")
 uniformRefine!(TBB)
 print("The size of the basis is: ",size(TBB),"\n")
 THB = THBSplineBasis(TBB)
-boxes = Vector{Int32}([1,0,0,2,2])
+boxes = Vector{Int}([1,0,0,2,2])
 refineElements!(THB,boxes)
 
 print("The size of the basis is: ",size(THB),"\n")
