@@ -180,13 +180,8 @@ Get a string from the option list
 # Return
 - `string::Cstring`: the value
 
-# Examples
-#```jldoctest
-opt = OptionList(Dict("key1"=>"value1"))
-println(getString(opt,"key1"))
-# output
-value1
-```
+!!! warning
+    The returned value is a Cstring, and its conversion to a Julia string is not trivial.
 """
 function getString(opt::OptionList,key::String)::Cstring
     return ccall((:gsOptionList_getString,libgismo),Cstring,(Ptr{gsCOptionList},Cstring),opt.ptr,key)
@@ -208,6 +203,7 @@ opt = OptionList(Dict("key1"=>1))
 println(getInt(opt,"key1"))
 # output
 1
+```
 """
 function getInt(opt::OptionList,key::String)::Int
     return ccall((:gsOptionList_getInt,libgismo),Cint,(Ptr{gsCOptionList},Cstring),opt.ptr,key)
@@ -251,6 +247,7 @@ opt = OptionList(Dict("key1"=>true))
 println(getSwitch(opt,"key1"))
 # output
 true
+```
 """
 function getSwitch(opt::OptionList,key::String)::Bool
     return ccall((:gsOptionList_getSwitch,libgismo),Cint,(Ptr{gsCOptionList},Cstring),opt.ptr,key)

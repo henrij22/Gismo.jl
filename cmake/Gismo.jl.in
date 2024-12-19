@@ -8,6 +8,9 @@ include("Declarations.jl")
 # Load gsCore
 include("gsCore.jl")
 
+# Load gsMatrix
+include("gsMatrix.jl")
+
 # Load gsAssembler
 include("gsAssembler.jl")
 
@@ -16,9 +19,6 @@ include("gsHSplines.jl")
 
 # Load gsIO
 include("gsIO.jl")
-
-# Load gsMatrix
-include("gsMatrix.jl")
 
 # Load gsMatrix
 include("gsModeling.jl")
