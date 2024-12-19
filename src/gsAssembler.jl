@@ -39,8 +39,6 @@ mutable struct QuadRule
     end
 end
 
-Base.show(io::IO, obj::QuadRule) = ccall((:gsQuadRule_print,libgismo),Cvoid,(Ptr{gsCQuadRule},),obj.ptr)
-
 """
 Returns a Gauss rule for numerical integration
 
@@ -50,7 +48,7 @@ Returns a Gauss rule for numerical integration
 - `digits::Int`: the number of digits of precision for the rule (optionals)
 
 """
-function GaussRule(d::Int, numNodes::Array{Int}, digits::Int=Int(0))::QuadRule
+function GaussRule(d::Cint, numNodes::Array{Cint}, digits::Cint=Cint(0))::QuadRule
     @assert d == length(numNodes) "GaussRule: numNodes must have the same size as the dimension"
     qr = ccall((:gsGaussRule_create,libgismo),Ptr{gsCQuadRule},(Cint,Ptr{Cint},Cint),d,numNodes,digits)
     return QuadRule(qr)
@@ -64,9 +62,9 @@ Returns a Gauss rule for numerical integration
 - `digits::Int`: the number of digits of precision for the rule (optionals)
 
 """
-function GaussRule(numNodes::Int, digits::Int=Int(0))::QuadRule
-    d::Int = 1;
-    numNodesVec::Array{Int} = [numNodes]
+function GaussRule(numNodes::Cint, digits::Cint=Cint(0))::QuadRule
+    d::Cint = 1;
+    numNodesVec::Array{Cint} = [numNodes]
     qr = ccall((:gsGaussRule_create,libgismo),Ptr{gsCQuadRule},(Cint,Ptr{Cint},Cint),d,numNodesVec,digits)
     return QuadRule(qr)
 end
@@ -80,7 +78,7 @@ Returns a Lobatto rule for numerical integration
 - `digits::Int`: the number of digits of precision for the rule (optionals)
 
 """
-function LobattoRule(d::Int, numNodes::Array{Int}, digits::Int=Int(0))::QuadRule
+function LobattoRule(d::Cint, numNodes::Array{Cint}, digits::Cint=Cint(0))::QuadRule
     @assert d == length(numNodes) "LobattoRule: numNodes must have the same size as the dimension"
     qr = ccall((:gsLobattoRule_create,libgismo),Ptr{gsCQuadRule},(Cint,Ptr{Cint},Cint),d,numNodes,digits)
     return QuadRule(qr)
@@ -94,7 +92,7 @@ Returns a Lobatto rule for numerical integration
 - `digits::Int`: the number of digits of precision for the rule (optionals)
 
 """
-function LobattoRule(numNodes::Int, digits::Int=Int(0))::QuadRule
+function LobattoRule(numNodes::Int, digits::Int=Cint(0))::QuadRule
     d::Int = 1;
     numNodesVec::Array{Int} = [numNodes]
     qr = ccall((:LobattoRule_create,libgismo),Ptr{gsCQuadRule},(Cint,Ptr{Cint},Cint),d,numNodesVec,digits)
