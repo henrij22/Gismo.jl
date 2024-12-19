@@ -13,6 +13,8 @@ coefs = rand(size(TBB),3)
 # Create a BSpline geometry
 TB = TensorBSpline(TBB,coefs)
 
+Gismo.size(KV)
+
 # Create a matrix of linearly spaced evaluation points
 N = 10
 points1D = range(0,stop=1,length=N)

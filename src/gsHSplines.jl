@@ -6,10 +6,9 @@ THBSplineBasis
 
 """
     THBSplineBasis(basis::Basis)
-...
+
 # Arguments
 - `basis::Basis`: a basis object
-...
 
 # Examples
 ```jldoctest

@@ -90,11 +90,10 @@ Returns the number of elements in the knot vector.
 - `kv::KnotVector`: the knot vector
 
 # Examples
-# ```jldoctest output=(false)
-# kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
-# print(Gismo.size(kv))
-# # output
-# ```
+```jldoctest output=(false)
+kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
+# output
+```
 """
 function size(kv::KnotVector)::Int64
     return ccall((:gsKnotVector_size,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
@@ -103,10 +102,38 @@ function Base.size(kv::KnotVector)::Int64
     return Gismo.size(kv)
 end
 
+"""
+Size of the unique knots
+
+# Arguments
+- `kv::KnotVector`: the knot vector
+
+# Examples
+```jldoctest
+kv = KnotVector(Float64[0.,0.,0.,0.,0.5,0.5,1.,1.,1.,1.])
+print(uSize(kv))
+# output
+3
+```
+"""
 function uSize(kv::KnotVector)::Int64
     return ccall((:gsKnotVector_uSize,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
 end
 
+"""
+Number of elements in the knot vector
+
+# Arguments
+- `kv::KnotVector`: the knot vector
+
+# Examples
+```jldoctest
+kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
+print(numElements(kv))
+# output
+2
+```
+"""
 function numElements(kv::KnotVector)::Int64
     return ccall((:gsKnotVector_numElements,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
 end
@@ -194,7 +221,7 @@ function TensorBSplineBasis(kv::Vararg{KnotVector})::Basis
     return Basis(b)
 end
 
-function knots(basis::Basis, dir::Cint)::KnotVector
+function knots(basis::Basis, dir::Int64)::KnotVector
     if (domainDim(basis)==1)
         kv = ccall((:gsBSplineBasis_knots,libgismo),Ptr{gsCKnotVector},(Ptr{gsCBasis},Cint),basis.ptr,dir)
     else
@@ -354,11 +381,39 @@ end
 # gsNurbsCreator
 ########################################################################
 
-function BSplineUnitInterval(deg::Cint)::Geometry
+"""
+Create a unit interval represented by a B-spline
+
+# Arguments
+- `deg::Int64`: the degree of the B-spline
+
+# Examples
+```jldoctest output=(false)
+g = BSplineUnitInterval(2)
+# output
+```
+"""
+function BSplineUnitInterval(deg::Int64)::Geometry
     g = ccall((:gsNurbsCreator_BSplineUnitInterval,libgismo),Ptr{gsCGeometry},(Cint,),deg)
     return Geometry(g)
 end
 
+"""
+Create a rectangle represented by a B-spline
+
+# Arguments
+- `low_x::Cdouble`: the lower bound in x
+- `low_y::Cdouble`: the lower bound in y
+- `upp_x::Cdouble`: the upper bound in x
+- `upp_y::Cdouble`: the upper bound in y
+- `turndeg::Cdouble`: the turning degree
+
+# Examples
+```jldoctest output=(false)
+g = BSplineRectangle(0.0,0.0,1.0,1.0,0.0)
+# output
+```
+"""
 function BSplineRectangle(low_x::Cdouble=0.0,
                           low_y::Cdouble=0.0,
                           upp_x::Cdouble=1.0,
@@ -368,6 +423,22 @@ function BSplineRectangle(low_x::Cdouble=0.0,
     return Geometry(g)
 end
 
+"""
+Create a trapezium represented by a B-spline
+
+# Arguments
+- `Lbot::Cdouble`: the length of the bottom side
+- `Ltop::Cdouble`: the length of the top side
+- `H::Cdouble`: the height
+- `d::Cdouble`: the offset of the top-side w.r.t. the bottom side
+- `turndeg::Cdouble`: the turning degree
+
+# Examples
+```jldoctest output=(false)
+g = BSplineTrapezium(1.0,0.5,1.0,0.0,0.0)
+# output
+```
+"""
 function BSplineTrapezium(Lbot::Cdouble=1.0,
                           Ltop::Cdouble=0.5,
                           H::Cdouble=1.0,
@@ -377,6 +448,20 @@ function BSplineTrapezium(Lbot::Cdouble=1.0,
     return Geometry(g)
 end
 
+"""
+Create a square represented by a B-spline
+
+# Arguments
+- `r::Cdouble`: the radius of the square
+- `x::Cdouble`: the x-coordinate of the center
+- `y::Cdouble`: the y-coordinate of the center
+
+# Examples
+```jldoctest output=(false)
+g = BSplineSquare(1.0,0.0,0.0)
+# output
+```
+"""
 function BSplineSquare(r::Cdouble=1.0,
                        x::Cdouble=0.0,
                        y::Cdouble=0.0)::Geometry
@@ -384,8 +469,24 @@ function BSplineSquare(r::Cdouble=1.0,
     return Geometry(g)
 end
 
-function BSplineSquareGrid(n::Cint,
-                           m::Cint,
+"""
+Create a square grid represented by a multi-patch
+
+# Arguments
+- `n::Int64`: the number of patches in x-direction
+- `m::Int64`: the number of patches in y-direction
+- `r::Cdouble`: the radius of the square
+- `lx::Cdouble`: the x-coordinate of the center
+- `ly::Cdouble`: the y-coordinate of the center
+
+# Examples
+```jldoctest output=(false)
+g = BSplineSquareGrid(2,2,1.0,0.0,0.0)
+# output
+```
+"""
+function BSplineSquareGrid(n::Int64,
+                           m::Int64,
                            r::Cdouble=1.0,
                            lx::Cdouble=0.0,
                            ly::Cdouble=0.0)::MultiPatch
@@ -393,6 +494,21 @@ function BSplineSquareGrid(n::Cint,
     return MultiPatch(g)
 end
 
+"""
+Create a cube represented by a B-spline
+
+# Arguments
+- `r::Cdouble`: the radius of the cube
+- `x::Cdouble`: the x-coordinate of the center
+- `y::Cdouble`: the y-coordinate of the center
+- `z::Cdouble`: the z-coordinate of the center
+
+# Examples
+```jldoctest output=(false)
+g = BSplineCube(1.0,0.0,0.0,0.0)
+# output
+```
+"""
 function BSplineCube(r::Cdouble=1.0,
                      x::Cdouble=0.0,
                      y::Cdouble=0.0,
@@ -401,9 +517,27 @@ function BSplineCube(r::Cdouble=1.0,
     return Geometry(g)
 end
 
-function BSplineCubeGrid(n::Cint,
-                         m::Cint,
-                         p::Cint,
+"""
+Create a cube grid represented by a multi-patch
+
+# Arguments
+- `n::Int64`: the number of patches in x-direction
+- `m::Int64`: the number of patches in y-direction
+- `p::Int64`: the number of patches in z-direction
+- `r::Cdouble`: the radius of the cube
+- `lx::Cdouble`: the x-coordinate of the center
+- `ly::Cdouble`: the y-coordinate of the center
+- `lz::Cdouble`: the z-coordinate of the center
+
+# Examples
+```jldoctest output=(false)
+g = BSplineCubeGrid(2,2,2,1.0,0.0,0.0,0.0)
+# output
+```
+"""
+function BSplineCubeGrid(n::Int64,
+                         m::Int64,
+                         p::Int64,
                          r::Cdouble=1.0,
                          lx::Cdouble=0.0,
                          ly::Cdouble=0.0,
@@ -412,23 +546,73 @@ function BSplineCubeGrid(n::Cint,
     return MultiPatch(g)
 end
 
+"""
+Create a quarter annulus represented by a NURBS
+
+# Arguments
+- `r1::Cdouble`: the inner radius
+- `r2::Cdouble`: the outer radius
+
+# Examples
+```jldoctest output=(false)
+g = NurbsQuarterAnnulus(1.0,2.0)
+# output
+```
+"""
 function NurbsQuarterAnnulus(r1::Cdouble=1.0,
                              r2::Cdouble=2.0)::Geometry
     g = ccall((:gsNurbsCreator_NurbsQuarterAnnulus,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),r1,r2)
     return Geometry(g)
 end
 
+"""
+Create an annulus represented by a NURBS
+
+# Arguments
+- `r1::Cdouble`: the inner radius
+- `r2::Cdouble`: the outer radius
+
+# Examples
+```jldoctest output=(false)
+g = NurbsAnnulus(1.0,2.0)
+# output
+```
+"""
 function NurbsAnnulus(r1::Cdouble=1.0,
                       r2::Cdouble=2.0)::Geometry
     g = ccall((:gsNurbsCreator_NurbsAnnulus,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),r1,r2)
     return Geometry(g)
 end
 
+"""
+Create a saddle represented by a B-spline
+
+# Examples
+```jldoctest output=(false)
+g = BSplineSaddle()
+# output
+```
+"""
 function BSplineSaddle()::Geometry
     g = ccall((:gsNurbsCreator_BSplineSaddle,libgismo),Ptr{gsCGeometry},(),)
     return Geometry(g)
 end
 
+"""
+Create a sphere represented by a NURBS
+
+# Arguments
+- `r::Cdouble`: the radius
+- `x::Cdouble`: the x-coordinate of the center
+- `y::Cdouble`: the y-coordinate of the center
+- `z::Cdouble`: the z-coordinate of the center
+
+# Examples
+```jldoctest output=(false)
+g = NurbsSphere(1.0,0.0,0.0,0.0)
+# output
+```
+"""
 function NurbsSphere(r::Cdouble=1.0,
                      x::Cdouble=0.0,
                      y::Cdouble=0.0,
@@ -437,6 +621,20 @@ function NurbsSphere(r::Cdouble=1.0,
     return Geometry(g)
 end
 
+"""
+Create a circle represented by a NURBS
+
+# Arguments
+- `r::Cdouble`: the radius
+- `x::Cdouble`: the x-coordinate of the center
+- `y::Cdouble`: the y-coordinate of the center
+
+# Examples
+```jldoctest output=(false)
+g = NurbsCircle(1.0,0.0,0.0)
+# output
+```
+"""
 function NurbsCircle(r::Cdouble=1.0,
                      x::Cdouble=0.0,
                      y::Cdouble=0.0)::Geometry
@@ -444,13 +642,40 @@ function NurbsCircle(r::Cdouble=1.0,
     return Geometry(g)
 end
 
+"""
+Create a triangle represented by a B-spline
+
+# Arguments
+- `H::Cdouble`: the height
+- `W::Cdouble`: the width
+
+# Examples
+```jldoctest output=(false)
+g = BSplineTriangle(1.0,1.0)
+# output
+```
+"""
 function BSplineTriangle(H::Cdouble=1.0,
                          W::Cdouble=1.0)::Geometry
     g = ccall((:gsNurbsCreator_BSplineTriangle,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),H,W)
     return Geometry(g)
 end
 
-function BSplineStar(N::Cint=3,
+"""
+Create a star represented by a multi-patch
+
+# Arguments
+- `N::Int64`: the number of arms
+- `R0::Cdouble`: the outer radius
+- `R1::Cdouble`: the inner radius
+
+# Examples
+```jldoctest output=(false)
+g = BSplineStar(3,1.0,0.5)
+# output
+```
+"""
+function BSplineStar(N::Int64=3,
                      R0::Cdouble=1.0,
                      R1::Cdouble=0.5)::MultiPatch
     g = ccall((:gsNurbsCreator_BSplineStar,libgismo),Ptr{gsCMultiPatch},(Cint,Cdouble,Cdouble),N,R0,R1)

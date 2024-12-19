@@ -1,15 +1,15 @@
 module Gismo
 
-import gismo_jll:libgismo
+libgismo = "/home/hverhelst/Documents/code/gismo_mex/build/lib/libgismo"
 
 # Forward declaration of structs
 include("Declarations.jl")
 
-# Load gsAssembler
-include("gsAssembler.jl")
-
 # Load gsCore
 include("gsCore.jl")
+
+# Load gsAssembler
+include("gsAssembler.jl")
 
 # Load gsHSplines
 include("gsHSplines.jl")

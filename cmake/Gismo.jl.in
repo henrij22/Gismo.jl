@@ -5,11 +5,11 @@ module Gismo
 # Forward declaration of structs
 include("Declarations.jl")
 
-# Load gsAssembler
-include("gsAssembler.jl")
-
 # Load gsCore
 include("gsCore.jl")
+
+# Load gsAssembler
+include("gsAssembler.jl")
 
 # Load gsHSplines
 include("gsHSplines.jl")

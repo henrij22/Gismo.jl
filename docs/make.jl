@@ -17,10 +17,13 @@ DocMeta.setdocmeta!(Gismo,
 
 # List of subsection pages
 SUBSECTION_PAGES = [
-    "gsMatrix.md",
     "gsCore.md",
-    "gsNurbs.md",
-    "gsHSplines.md"
+    "gsAssembler.md",
+    "gsHSplines.md",
+    "gsIO.md",
+    "gsMatrix.md",
+    "gsModeling.md",
+    "gsNurbs.md"
 ]
 
 makedocs(
