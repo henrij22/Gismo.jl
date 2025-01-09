@@ -1,13 +1,13 @@
 name = "Gismo"
 uuid = "f019f137-166b-4455-b646-ee200b009b83"
 authors = ["Hugo Verhelst <hugoverhelst1995@gmail.com>"]
-version = "0.1.0"
+version = "25.1.0"
 
 [deps]
 gismo_jll = "c3015cfb-32aa-504c-ba3d-5541e7ecaf35"
 
 [compat]
-gismo_jll = "24.8.0"
+gismo_jll = "25.1.0"
 julia = "1.9"
 
 [extras]

@@ -27,6 +27,7 @@ export
     MultiPatch,
     addPatch!,
     patch,
+    computeTopology!,
     MultiBasis
 
 ########################################################################
@@ -623,6 +624,28 @@ Returns the coefficients of a MultiPatch
 function patch(obj::MultiPatch,i::Int)::Geometry
     g = ccall((:gsMultiPatch_patch,libgismo),Ptr{gsCGeometry},(Ptr{gsCMultiPatch},Cint),obj.ptr,i)
     return Geometry(g,false)
+end
+
+"""
+Computes the topology of a MultiPatch
+
+# Arguments
+- `obj::MultiPatch`: a Gismo MultiPatch
+
+"""
+function computeTopology!(obj::MultiPatch)::Nothing
+    ccall((:gsMultiPatch_computeTopology,libgismo),Cvoid,(Ptr{gsCMultiPatch},),obj.ptr)
+end
+
+"""
+Returns the size of a MultiPatch (number of patches)
+
+# Arguments
+- `obj::MultiPatch`: a Gismo MultiPatch
+
+"""
+function size(obj::MultiPatch)::Int
+    return ccall((:gsFunctionSet_nPieces,libgismo),Cint,(Ptr{gsCFunctionSet},),obj.ptr)
 end
 
 ########################################################################
