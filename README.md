@@ -1,4 +1,13 @@
-[![Build Status](https://github.com/gismo/Gismo.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/gismo/Gismo.jl/actions/workflows/CI.yml?query=branch%3Amain)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/JuliaBinaryWrappers/gismo_jll.jl/total?label=Downloads%20(gismo_jll)&color=008A00)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/gismo/Gismo.jl/total?label=Downloads%20(Gismo.jl)&color=008A00)
+
+|Gismo.jl||
+|--:|---|
+|License|![GitHub License](https://img.shields.io/github/license/gismo/gismo?color=008A00)|
+|OS support|Linux, Windows, macOS|
+|Build status|[![ci](https://github.com/gismo/gsKLShell/actions/workflows/ci.yml/badge.svg)](https://github.com/gismo/gsKLShell/actions/workflows/ci.yml)|
+|Developers/maintainers| [![Static Badge](https://img.shields.io/badge/@hverhelst-008A00)](https://github.com/hverhelst) [![Static Badge](https://img.shields.io/badge/@Albe21072000-008A00)](https://github.com/Albe21072000)|
+|Activity|![GitHub commits since latest release](https://img.shields.io/github/commits-since/gismo/Gismo.jl/latest?color=008A00) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/gismo/Gismo.jl?color=008A00)|
 
 # Gismo.jl: Geometry + Simulation Modules meet Julia
 The Gismo.jl package provides an interface to the [Geometry + Simulation Modules](https://github.com/gismo/gismo) inside Julia.
