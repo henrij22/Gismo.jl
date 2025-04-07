@@ -4,6 +4,7 @@
 |Gismo.jl||
 |--:|---|
 |License|![GitHub License](https://img.shields.io/github/license/gismo/gismo?color=008A00)|
+|DOI|[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15167668.svg)](https://doi.org/10.5281/zenodo.15167668)|
 |OS support|Linux, Windows, macOS|
 |Build status|[![ci](https://github.com/gismo/gsKLShell/actions/workflows/ci.yml/badge.svg)](https://github.com/gismo/gsKLShell/actions/workflows/ci.yml)|
 |Developers/maintainers| [![Static Badge](https://img.shields.io/badge/@hverhelst-008A00)](https://github.com/hverhelst) [![Static Badge](https://img.shields.io/badge/@Albe21072000-008A00)](https://github.com/Albe21072000)|
