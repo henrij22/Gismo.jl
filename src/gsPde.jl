@@ -93,8 +93,8 @@ end
 
 Base.show(io::IO, obj::BoundaryConditions) = ccall((:gsBoundaryConditions_print,libgismo),Cvoid,(Ptr{gsCBoundaryConditions},),obj.ptr)
 
-function addCondition!(bc::BoundaryConditions; patch::Int, side::Int, type::Int, fun::FunctionExpr, unknown::Int=0, component::Int=-1, parametric::Bool=false)
-    ccall((:gsBoundaryConditions_addCondition,libgismo),Cvoid,(Ptr{gsCBoundaryConditions},Cint,Cint,Cint,Ptr{gsCFunctionExpr},Cint,Cint,Cint),bc.ptr,patch,side,type,fun.ptr,unknown,component,parametric)
+function addCondition!(bc::BoundaryConditions; patch::Int, side::Int, type::Int, fun::FunctionExpr, unknown::Int=0, parametric::Bool=false, component::Int=-1)
+    ccall((:gsBoundaryConditions_addCondition,libgismo),Cvoid,(Ptr{gsCBoundaryConditions},Cint,Cint,Cint,Ptr{gsCFunctionExpr},Cint,Cint,Cint),bc.ptr,patch,side,type,fun.ptr,unknown,parametric,component)
 end
 
 function addCornerValue!(bc::BoundaryConditions, patch::Int, corner::Int, value::Real, unknown::Int, component::Int)
