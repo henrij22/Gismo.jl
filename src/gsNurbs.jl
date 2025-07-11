@@ -577,8 +577,7 @@ g = NurbsAnnulus(1.0,2.0)
 """
 function NurbsAnnulus(r1::Cdouble=1.0,
                       r2::Cdouble=2.0)::Geometry
-    g = ccall((:gsNurbsCreator_NurbsAnnulus,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),r1,r2)
-    return Geometry(g)
+    return ccall((:gsNurbsCreator_NurbsAnnulus,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),r1,r2) |> Geometry
 end
 
 """

@@ -1,6 +1,3 @@
-# Import Base.size to be able to overload it
-import Base.size
-
 module Gismo
 
 import gismo_jll:libgismo
@@ -28,5 +25,12 @@ include("gsModeling.jl")
 
 # Load gsNurbs
 include("gsNurbs.jl")
+
+# Load gsPde
+include("gsPde.jl")
+
+####### SUBMODULES
+
+
 
 end #module

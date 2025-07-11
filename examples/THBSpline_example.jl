@@ -21,6 +21,12 @@ print("The size of the basis is: ",size(THB),"\n")
 
 print("The size of the basis is: ",size(THB),"\n")
 
+println("Level 1 is: ",tensorLevel(THB,Int32(1)))
+point = zeros(Float64,2,1)
+point[1] = 0.5
+point[2] = 0.5
+println("The level at the point is: ",getLevelAtPoint(THB,point))
+
 # Create a matrix of random coefficients
 coefs = rand(size(TBB),3)
 # Create a BSpline geometry

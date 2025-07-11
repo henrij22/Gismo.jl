@@ -5,6 +5,7 @@ version = "25.1.0"
 
 [deps]
 gismo_jll = "c3015cfb-32aa-504c-ba3d-5541e7ecaf35"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 gismo_jll = "25.1.0"
