@@ -1,6 +1,5 @@
 using Plots
 using Gismo
-import Gismo.size
 
 KV = KnotVector([0.,0.,0.,1.,1.,1.])
 TBB = TensorBSplineBasis(KV,KV)
@@ -22,6 +21,12 @@ print("The size of the basis is: ",size(THB),"\n")
 
 print("The size of the basis is: ",size(THB),"\n")
 
+println("Level 1 is: ",tensorLevel(THB,Int32(1)))
+point = zeros(Float64,2,1)
+point[1] = 0.5
+point[2] = 0.5
+println("The level at the point is: ",getLevelAtPoint(THB,point))
+
 # Create a matrix of random coefficients
 coefs = rand(size(TBB),3)
 # Create a BSpline geometry
@@ -36,7 +41,7 @@ points2D = zeros(2,N*N)
 points2D[1,:] = repeat(points1D, N)
 points2D[2,:] = repeat(points1D, inner=N)
 
-ev = asMatrix(val(TB,points2D))
+ev = copyMatrix(val(TB,points2D))
 
 # Plot the geometry
 surface!(ev[1,:],ev[2,:],ev[3,:],legend=false)

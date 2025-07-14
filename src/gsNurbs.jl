@@ -95,11 +95,8 @@ kv = KnotVector(Float64[0.,0.,0.,0.,0.5,1.,1.,1.,1.])
 # output
 ```
 """
-function size(kv::KnotVector)::Int
-    return ccall((:gsKnotVector_size,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
-end
 function Base.size(kv::KnotVector)::Int
-    return Gismo.size(kv)
+    return ccall((:gsKnotVector_size,libgismo),Cint,(Ptr{gsCKnotVector},),kv.ptr)
 end
 
 """
@@ -580,8 +577,7 @@ g = NurbsAnnulus(1.0,2.0)
 """
 function NurbsAnnulus(r1::Cdouble=1.0,
                       r2::Cdouble=2.0)::Geometry
-    g = ccall((:gsNurbsCreator_NurbsAnnulus,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),r1,r2)
-    return Geometry(g)
+    return ccall((:gsNurbsCreator_NurbsAnnulus,libgismo),Ptr{gsCGeometry},(Cdouble,Cdouble),r1,r2) |> Geometry
 end
 
 """

@@ -48,7 +48,7 @@ points2D = zeros(2,N*N)
 # Create a meshgrid of evaluation points
 points2D[1,:] = repeat(points1D, N)
 points2D[2,:] = repeat(points1D, inner=N)
-ev = asMatrix(val(geo,points2D))
+ev = copyMatrix(val(geo,points2D))
 # Plot the geometry
 scatter(points[1,:],points[2,:],points[3,:],legend=false)
 surface!(ev[1,:],ev[2,:],ev[3,:],legend=false)

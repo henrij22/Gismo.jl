@@ -2,7 +2,10 @@ export
     THBSplineBasis,
     HBSplineBasis,
     THBSpline,
-    HBSpline
+    HBSpline,
+    tensorLevel,
+    getLevelAtPoint,
+    getElementData
 ########################################################################
 # gsTHBSplineBasis
 ########################################################################
@@ -131,4 +134,64 @@ function HBSpline(basis::Basis, coefs::Matrix{Cdouble})::Geometry
         error("HBSpline not implemented for this dimension")
     end
     return Geometry(g)
+end
+
+########################################################################
+
+"""
+Returns the tensor basis of level `level`.
+
+# Arguments
+- `level::Int`: the level
+"""
+function tensorLevel(basis::Basis,level::Cint)::Basis
+    b = ccall((:gsHTensorBasis_tensorLevel,libgismo),Ptr{gsCBasis},(Ptr{gsCBasis},Cint),basis.ptr,level)
+    return Basis(b)
+end
+
+"""
+Returns the level of the basis at a given point.
+
+# Arguments
+- `basis::Basis`: the basis
+- `point::Vector{Cdouble}`: the point
+"""
+function getLevelAtPoint(basis::Basis,point::Vector{Cdouble})::Cint
+    return getLevelAtPoint(basis,reshape(point,(length(point),1)))
+end
+
+"""
+Returns the level of the basis at a given point.
+
+# Arguments
+- `basis::Basis`: the basis
+- `point::Matrix{Cdouble}`: the point
+"""
+function getLevelAtPoint(basis::Basis,point::Matrix{Cdouble})::Cint
+    @assert Base.size(point,1) == domainDim(basis) "getLevelAtPoint: point must have the same number of rows as the domain dimension"
+    @assert Base.size(point,2) == 1 "getLevelAtPoint: point must have only one column"
+    pt = EigenMatrix(Base.size(point,1), Base.size(point,2), pointer(point) )
+    return ccall((:gsHTensorBasis_getLevelAtPoint,libgismo),Cint,(Ptr{gsCBasis},Ptr{gsCMatrix}),basis.ptr,pt.ptr)
+end
+
+"""
+Returns the elements of the basis, with:
+- `knotBoxes` the elements in parametric coordinates (every pair of columns is an element)
+- `indexBoxes` the elements in index coordinates (every column (of length 2*d+1) is an element, with the first index the level, the second and third the index of the lower corner, and the fourth and fifth the index of the upper corner)
+- `levelBoxes` the level of the elements
+
+# Arguments
+- `basis::Basis`: the basis
+"""
+
+function getElementData(basis::Basis)::Tuple{EigenMatrix,EigenMatrixInt,EigenMatrixInt}
+    knotBoxes = EigenMatrix()
+    indexBoxes = EigenMatrixInt()
+    levelBoxes = EigenMatrixInt()
+    # The following function returns:
+    # - the knotBoxes (elements in parametric coordinates)
+    # - the indexBoxes (elements in index coordinates)
+    # - the levelBoxes (level of the elements)
+    ccall((:gsHTensorBasis_elements_into,libgismo),Cvoid,(Ptr{gsCBasis},Bool,Bool,Bool,Ptr{EigenMatrix},Ptr{EigenMatrixInt},Ptr{EigenMatrixInt}),basis.ptr,true,true,true,knotBoxes.ptr,indexBoxes.ptr,levelBoxes.ptr)
+    return (knotBoxes,indexBoxes,levelBoxes)
 end

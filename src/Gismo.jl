@@ -26,4 +26,11 @@ include("gsModeling.jl")
 # Load gsNurbs
 include("gsNurbs.jl")
 
+# Load gsPde
+include("gsPde.jl")
+
+####### SUBMODULES
+
+
+
 end #module

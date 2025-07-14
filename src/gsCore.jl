@@ -8,19 +8,22 @@ export
     degree,
     numElements,
     size,
+    degreeElevate!,
     uniformRefine!,
     refineElements!,
     refine!,
+    getElements,
+    boundary,
+    boundaryOffset,
     actives,
+    compute,
     val,
     deriv,
     deriv2,
-    evalSingle,
-    derivSingle,
-    deriv2Single,
     Geometry,
     basis,
     coefs,
+    setCoefs!,
     normal,
     closest,
     invertPoints,
@@ -28,7 +31,9 @@ export
     addPatch!,
     patch,
     computeTopology!,
-    MultiBasis
+    embed!,
+    MultiBasis,
+    FunctionExpr
 
 ########################################################################
 # gsBasis
@@ -148,11 +153,22 @@ Returns the size of a basis
 - `obj::Basis`: a Gismo Basis
 
 """
-function size(obj::Basis)::Int
+function Base.size(obj::Basis)::Int
     return ccall((:gsBasis_size,libgismo),Cint,(Ptr{gsCBasis},),obj.ptr)
 end
-function Base.size(obj::Basis)::Int
-    return Gismo.size(obj)
+
+"""
+Elevates the degree of a basis
+
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `numElevate::Int=Int(1)`: the number of degrees to elevate
+- `dir::Int=Int(-1)`: the direction of the elevation (-1: all, 0: x, 1: y, 2: z)
+
+"""
+function degreeElevate!(obj::Basis,numElevate::Int=Int(1),dir::Int=Int(-1))::Nothing
+    ccall((:gsBasis_degreeElevate,libgismo),Cvoid,
+            (Ptr{gsCBasis},Cint,Cint),obj.ptr,numElevate,dir)
 end
 
 """
@@ -203,6 +219,62 @@ function refine!(obj::Basis,boxes::Matrix{Cdouble},refExt::Int=Int(0))::Nothing
             obj.ptr,bb.ptr,refExt)
 end
 
+"""
+Gets the elements of the basis, as a matrix of size (domainDim x 2*numElements), with every two columns representing the lower and upper bounds of the box
+
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `side::Int=0`: the side of the basis (0: none, 1: west, 2: east, 3: south, 4: north)
+
+"""
+function getElements(obj::Basis, side::Int = 0)::EigenMatrix
+    result = EigenMatrix()
+    if (side==0)
+        ccall((:gsBasis_elements_into,libgismo),Cvoid,
+          (Ptr{gsCBasis},Ptr{gsCMatrix},),
+          obj.ptr,result.ptr)
+    else
+        ccall((:gsBasis_elementsBdr_into,libgismo),Cvoid,
+          (Cint,Ptr{gsCBasis},Ptr{gsCMatrix}),
+          side,obj.ptr,result.ptr)
+    end
+    # Removed redundant ccall to gsBasis_elements_into
+    return result;
+end
+
+"""
+Returns the boundary degrees of freedom of a basis on a side
+
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `side::Int`: the side of the basis (0: none, 1: west, 2: east, 3: south, 4: north)
+"""
+function boundary(obj::Basis, side::Int)::EigenMatrixInt
+    @assert side <= 2*domainDim(obj)+1 "Side should be less than 2*domainDim+1"
+    result = EigenMatrixInt()
+    ccall((:gsBasis_boundary_into,libgismo),Cvoid,
+      (Ptr{gsCBasis},Cint,Ptr{gsCMatrixInt},),
+      obj.ptr,side,result.ptr)
+    return result;
+end
+
+"""
+Returns the boundary offset of a basis on a side
+
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `side::Int`: the side of the basis (0: none, 1: west, 2: east, 3: south, 4: north)
+- `offset::Int`: the offset of the boundary
+
+"""
+function boundaryOffset(obj::Basis, side::Int, offset::Int)::EigenMatrixInt
+    @assert side <= 2*domainDim(obj)+1 "Side should be less than 2*domainDim+1"
+    result = EigenMatrixInt()
+    ccall((:gsBasis_boundaryOffset_into,libgismo),Cvoid,
+      (Ptr{gsCBasis},Cint,Cint,Ptr{gsCMatrixInt},),
+      obj.ptr,side,offset,result.ptr)
+    return result;
+end
 
 """
 Returns the actives of a basis
@@ -220,6 +292,42 @@ function actives(obj::Basis,u::Matrix{Cdouble})::EigenMatrixInt
       (Ptr{gsCBasis},Ptr{gsCMatrix},Ptr{gsCMatrixInt},),
       obj.ptr,uu.ptr,result.ptr)
     return result;
+end
+
+"""
+Computes and returns the values, derivatives and second derivatives of a basis
+
+# Arguments
+- `obj::Basis`: a Gismo Basis
+- `u::Matrix{Cdouble}`: a matrix of points
+- `n::Int`: the number of derivatives to compute
+"""
+function compute(obj::Basis,u::Matrix{Cdouble},n::Int)::Array{EigenMatrix}
+    @assert n <= 2 "n should be less than or equal to 2"
+    @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
+    uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
+    if (n==0) # values only
+        result = EigenMatrix()
+        ccall((:gsFunctionSet_eval_into,libgismo),Cvoid,
+          (Ptr{gsCBasis},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+          obj.ptr,uu.ptr,result.ptr)
+        return Array{EigenMatrix}([result]);
+    elseif (n==1) # values and derivatives
+        val = EigenMatrix()
+        der = EigenMatrix()
+        ccall((:gsFunctionSet_evalAllDers1_into,libgismo),Cvoid,
+          (Ptr{gsCBasis},Ptr{gsCMatrix},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+          obj.ptr,uu.ptr,val.ptr,der.ptr)
+        return Array{EigenMatrix}([val,der]);
+    elseif (n==2) # values, derivatives and second derivatives
+        val = EigenMatrix()
+        der = EigenMatrix()
+        der2 = EigenMatrix()
+        ccall((:gsFunctionSet_evalAllDers2_into,libgismo),Cvoid,
+          (Ptr{gsCBasis},Ptr{gsCMatrix},Ptr{gsCMatrix},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+          obj.ptr,uu.ptr,val.ptr,der.ptr,der2.ptr)
+        return Array{EigenMatrix}([val,der,der2]);
+    end
 end
 
 """
@@ -285,7 +393,7 @@ Returns the evaluation of a single basis function
 - `u::Matrix{Cdouble}`: a matrix of points
 
 """
-function evalSingle(obj::Basis,i::Int,u::Matrix{Cdouble})::EigenMatrix
+function val(obj::Basis,i::Int,u::Matrix{Cdouble})::EigenMatrix
     @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
     uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
     result = EigenMatrix()
@@ -304,7 +412,7 @@ Returns the derivative of a single basis function
 - `u::Matrix{Cdouble}`: a matrix of points
 
 """
-function derivSingle(obj::Basis,i::Int,u::Matrix{Cdouble})::EigenMatrix
+function deriv(obj::Basis,i::Int,u::Matrix{Cdouble})::EigenMatrix
     @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
     uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
     result = EigenMatrix()
@@ -323,11 +431,11 @@ Returns the second derivative of a single basis function
 - `u::Matrix{Cdouble}`: a matrix of points
 
 """
-function deriv2Single(obj::Basis,i::Int,u::Matrix{Cdouble})::EigenMatrix
+function deriv2(obj::Basis,i::Int,u::Matrix{Cdouble})::EigenMatrix
     @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
     uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
     result = EigenMatrix()
-    ccall((:gsBasisSet_deriv2Single_into,libgismo),Cvoid,
+    ccall((:gsBasis_deriv2Single_into,libgismo),Cvoid,
       (Ptr{gsCBasis},Cint,Ptr{gsCMatrix},Ptr{gsCMatrix},),
       obj.ptr,i,uu.ptr,result.ptr)
     return result;
@@ -420,6 +528,85 @@ function coefs(obj::Geometry)::EigenMatrix
     result = EigenMatrix()
     ccall((:gsGeometry_coefs_into,libgismo),Cvoid,(Ptr{gsCGeometry},Ptr{gsCMatrix},),obj.ptr,result.ptr)
     return result;
+end
+
+"""
+Sets the coefficients of a geometry
+
+# Arguments
+- `obj::Geometry`: a Gismo Geometry
+- `coefs::EigenMatrix`: the coefficients
+
+"""
+function setCoefs!(obj::Geometry,coefs::Matrix{Cdouble})::Nothing
+    @assert Base.size(coefs,1)==size(basis(obj)) "The number of rows of the coefficients should be equal to the number of degrees of freedom"
+    cc = EigenMatrix(Base.size(coefs,1),Base.size(coefs,2),pointer(coefs))
+    ccall((:gsGeometry_setCoefs,libgismo),Cvoid,(Ptr{gsCGeometry},Ptr{gsCMatrix},),obj.ptr,cc.ptr)
+end
+
+"""
+Uniformly refines a geometry
+
+# Arguments
+- `obj::Geometry`: a Gismo Geometry
+- `numKnots::Int=Int(1)`: the number of knots to add
+- `mul::Int=Int(1)`: the multiplicity of the knots
+- `dir::Int=Int(-1)`: the direction of the refinement (-1: all, 0: x, 1: y, 2: z)
+
+"""
+function uniformRefine!(obj::Geometry,numKnots::Int=Int(1),mul::Int=Int(1),dir::Int=Int(-1))::Nothing
+    ccall((:gsGeometry_uniformRefine,libgismo),Cvoid,
+            (Ptr{gsCGeometry},Cint,Cint,Cint),obj.ptr,numKnots,mul,dir)
+end
+
+"""
+Elevates the degree of a geometry
+
+# Arguments
+- `obj::Geometry`: a Gismo Geometry
+- `numElevate::Int=Int(1)`: the number of degrees to elevate
+- `dir::Int=Int(-1)`: the direction of the elevation (-1: all, 0: x, 1: y, 2: z)
+
+"""
+function degreeElevate!(obj::Geometry,numElevate::Int=Int(1),dir::Int=Int(-1))::Nothing
+    ccall((:gsGeometry_degreeElevate,libgismo),Cvoid,
+            (Ptr{gsCGeometry},Cint,Cint),obj.ptr,numElevate,dir)
+end
+
+"""
+Computes and returns the values, derivatives and second derivatives of a geometry
+
+# Arguments
+- `obj::Geometry`: a Gismo Geometry
+- `u::Matrix{Cdouble}`: a matrix of points
+- `n::Int`: the number of derivatives to compute
+"""
+function compute(obj::Geometry,u::Matrix{Cdouble},n::Int)::Array{EigenMatrix}
+    @assert n <= 2 "n should be less than or equal to 2"
+    @assert Base.size(u,1)==domainDim(obj) "Domain dimension should be equal to the number of rows of the points"
+    uu = EigenMatrix(Base.size(u,1), Base.size(u,2), pointer(u) )
+    if (n==0) # values only
+        result = EigenMatrix()
+        ccall((:gsFunctionSet_eval_into,libgismo),Cvoid,
+          (Ptr{gsCGeometry},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+          obj.ptr,uu.ptr,result.ptr)
+        return Array{EigenMatrix}([result]);
+    elseif (n==1) # values and derivatives
+        val = EigenMatrix()
+        der = EigenMatrix()
+        ccall((:gsFunctionSet_evalAllDers1_into,libgismo),Cvoid,
+          (Ptr{gsCGeometry},Ptr{gsCMatrix},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+          obj.ptr,uu.ptr,val.ptr,der.ptr)
+        return Array{EigenMatrix}([val,der]);
+    elseif (n==2) # values, derivatives and second derivatives
+        val = EigenMatrix()
+        der = EigenMatrix()
+        der2 = EigenMatrix()
+        ccall((:gsFunctionSet_evalAllDers2_into,libgismo),Cvoid,
+          (Ptr{gsCGeometry},Ptr{gsCMatrix},Ptr{gsCMatrix},Ptr{gsCMatrix},Ptr{gsCMatrix},),
+          obj.ptr,uu.ptr,val.ptr,der.ptr,der2.ptr)
+        return Array{EigenMatrix}([val,der,der2]);
+    end
 end
 
 """
@@ -560,6 +747,12 @@ mutable struct MultiPatch
         return m
     end
 
+    function MultiPatch(patch::Geometry)
+        m = new(ccall((:gsMultiPatch_create_geometry,libgismo),Ptr{gsCMultiPatch},((Ptr{gsCGeometry},)),patch.ptr) )
+        finalizer(destroy!, m)
+        return m
+    end
+
     function destroy!(m::MultiPatch)
         ccall((:gsFunctionSet_delete,libgismo),Cvoid,(Ptr{gsCFunctionSet},),m.ptr)
     end
@@ -621,7 +814,7 @@ Returns the coefficients of a MultiPatch
 - `i::Int`: the index of the patch
 
 """
-function patch(obj::MultiPatch,i::Int)::Geometry
+function patch(obj::MultiPatch,i::Int=0)::Geometry
     g = ccall((:gsMultiPatch_patch,libgismo),Ptr{gsCGeometry},(Ptr{gsCMultiPatch},Cint),obj.ptr,i)
     return Geometry(g,false)
 end
@@ -638,13 +831,51 @@ function computeTopology!(obj::MultiPatch)::Nothing
 end
 
 """
+Embeds a MultiPatch into a given dimension
+
+# Arguments
+- `obj::MultiPatch`: a Gismo MultiPatch
+- `dim::Cint`: the dimension to embed into (2: 2D, 3: 3D)
+"""
+function embed!(obj::MultiPatch,dim::Int)::Nothing
+    ccall((:gsMultiPatch_embed,libgismo),Cvoid,(Ptr{gsCMultiPatch},Int),obj.ptr,dim)
+end
+
+"""
+Uniformly refines a MultiPatch
+
+# Arguments
+- `obj::MultiPatch`: a Gismo MultiPatch
+- `numKnots::Int=Int(1)`: the number of knots to add
+- `mul::Int=Int(1)`: the multiplicity of the knots
+- `dir::Int=Int(-1)`: the direction of the refinement (-1: all, 0: x, 1: y, 2: z)
+"""
+function uniformRefine!(obj::MultiPatch,numKnots::Int=Int(1),mul::Int=Int(1),dir::Int=Int(-1))::Nothing
+    ccall((:gsMultiPatch_uniformRefine,libgismo),Cvoid,
+            (Ptr{gsCMultiPatch},Cint,Cint,Cint),obj.ptr,numKnots,mul,dir)
+end
+
+"""
+Elevates the degree of a MultiPatch
+
+# Arguments
+- `obj::MultiPatch`: a Gismo MultiPatch
+- `numElevate::Int=Int(1)`: the number of degrees to elevate
+- `dir::Int=Int(-1)`: the direction of the elevation (-1: all, 0: x, 1: y, 2: z)
+"""
+function degreeElevate!(obj::MultiPatch,numElevate::Int=Int(1),dir::Int=Int(-1))::Nothing
+    ccall((:gsMultiPatch_degreeElevate,libgismo),Cvoid,
+            (Ptr{gsCMultiPatch},Cint,Cint),obj.ptr,numElevate,dir)
+end
+
+"""
 Returns the size of a MultiPatch (number of patches)
 
 # Arguments
 - `obj::MultiPatch`: a Gismo MultiPatch
 
 """
-function size(obj::MultiPatch)::Int
+function Base.size(obj::MultiPatch)::Int
     return ccall((:gsFunctionSet_nPieces,libgismo),Cint,(Ptr{gsCFunctionSet},),obj.ptr)
 end
 
@@ -670,8 +901,14 @@ mutable struct MultiBasis
         return m
     end
 
+    function MultiBasis(multiPatch::MultiPatch)
+        m = new(ccall((:gsMultiBasis_create_patches,libgismo),Ptr{gsCMultiBasis},((Ptr{gsCMultiPatch},)),multiPatch.ptr) )
+        finalizer(destroy!, m)
+        return m
+    end
+
     function destroy!(m::MultiBasis)
-        ccall((:gsMultiBasis_delete,libgismo),Cvoid,(Ptr{gsCFunctionSet},),m.ptr)
+        ccall((:gsFunctionSet_delete,libgismo),Cvoid,(Ptr{gsCFunctionSet},),m.ptr)
     end
 end
 
@@ -687,3 +924,39 @@ function basis(obj::MultiBasis,i::Int)::Basis
     b = ccall((:gsMultiBasis_basis,libgismo),Ptr{gsCBasis},(Ptr{gsCFunctionSet},Cint),obj.ptr,i)
     return Basis(b,false)
 end
+
+########################################################################
+# gsFunctionExpr
+########################################################################
+
+"""
+Makes a Gismo FunctionExpr
+"""
+mutable struct FunctionExpr
+    ptr::Ptr{gsCFunctionExpr}
+
+    function FunctionExpr(domainDim::Int, funs::Vararg{String})
+        targetDim = Base.length(funs)
+        if (targetDim==1)
+            f = new(ccall((:gsFunctionExpr1_create,libgismo),Ptr{gsCFunctionExpr},(Cstring,Cint),funs[1],domainDim) )
+        elseif (targetDim==2)
+            f = new(ccall((:gsFunctionExpr2_create,libgismo),Ptr{gsCFunctionExpr},(Cstring,Cstring,Cint),funs[1],funs[2],domainDim) )
+        elseif (targetDim==3)
+            f = new(ccall((:gsFunctionExpr3_create,libgismo),Ptr{gsCFunctionExpr},(Cstring,Cstring,Cstring,Cint),funs[1],funs[2],funs[3],domainDim) )
+        elseif (targetDim==4)
+            f = new(ccall((:gsFunctionExpr4_create,libgismo),Ptr{gsCFunctionExpr},(Cstring,Cstring,Cstring,Cstring,Cint),funs[1],funs[2],funs[3],funs[4],domainDim) )
+        elseif (targetDim==9)
+            f = new(ccall((:gsFunctionExpr9_create,libgismo),Ptr{gsCFunctionExpr},(Cstring,Cstring,Cstring,Cstring,Cstring,Cstring,Cstring,Cstring,Cstring,Cint),funs[1],funs[2],funs[3],funs[4],funs[5],funs[6],funs[7],funs[8],funs[9],domainDim) )
+        else
+            error("Target dimension must be 1, 2, 4 or 9")
+        end
+        finalizer(destroy!, f)
+        return f
+    end
+
+    function destroy!(f::FunctionExpr)
+        ccall((:gsFunctionSet_delete,libgismo),Cvoid,(Ptr{gsCFunctionExpr},),f.ptr)
+    end
+end
+
+Base.show(io::IO, obj::FunctionExpr) = ccall((:gsFunctionSet_print,libgismo),Cvoid,(Ptr{gsCFunctionExpr},),obj.ptr)
