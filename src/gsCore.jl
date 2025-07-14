@@ -238,9 +238,7 @@ function getElements(obj::Basis, side::Int = 0)::EigenMatrix
           (Cint,Ptr{gsCBasis},Ptr{gsCMatrix}),
           side,obj.ptr,result.ptr)
     end
-    ccall((:gsBasis_elements_into,libgismo),Cvoid,
-      (Ptr{gsCBasis},Ptr{gsCMatrix},),
-      obj.ptr,result.ptr)
+    # Removed redundant ccall to gsBasis_elements_into
     return result;
 end
 
