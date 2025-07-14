@@ -41,7 +41,7 @@ points2D = zeros(2,N*N)
 points2D[1,:] = repeat(points1D, N)
 points2D[2,:] = repeat(points1D, inner=N)
 
-ev = asMatrix(val(TB,points2D))
+ev = copyMatrix(val(TB,points2D))
 
 # Plot the geometry
 surface!(ev[1,:],ev[2,:],ev[3,:],legend=false)

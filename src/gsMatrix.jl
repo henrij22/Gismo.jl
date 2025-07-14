@@ -7,10 +7,8 @@ show,
 rows,
 cols,
 data,
-asMatrix,
-asVector,
-toMatrix,
-toVector,
+copyMatrix,
+copyVector,
 setZero!,
 EigenMatrixInt,
 deepcopy,
@@ -142,36 +140,19 @@ function data(object::EigenMatrix)::Ptr{Cdouble}
 end
 
 """
-Returns the matrix as a Julia matrix (transfers ownership).
-
-# Arguments
-- `object::EigenMatrix`: the matrix
-
-"""
-function toMatrix(object::EigenMatrix)::Matrix{Cdouble}
-    return unsafe_wrap(Array, data(object), (rows(object),cols(object)); own = true)
-end
-
-"""
-Returns the matrix as a Julia vector (transfers ownership).
-
-# Arguments
-- `object::EigenMatrix`: the matrix
-
-"""
-function toVector(object::EigenMatrix)::Vector{Cdouble}
-    return unsafe_wrap(Array, data(object), (rows(object)); own = true)
-end
-
-"""
 Returns the matrix as a Julia matrix.
 
 # Arguments
 - `object::EigenMatrix`: the matrix
 
+# Notes:
+This is the safe and robust way to create a Julia Matrix from C++ 'new'-allocated data
+It does not transfer ownership of the data, so the Julia Matrix will not free the C++ memory when it is garbage collected.
+The C++ memory will be freed by the finalizer.
 """
-function asMatrix(object::EigenMatrix)::Matrix{Cdouble}
-    return unsafe_wrap(Array, Base.unsafe_convert(Ptr{Cdouble},data(object)), (rows(object),cols(object)); own = false)
+# This is the safe and robust way to create a Julia Matrix from C++ 'new'-allocated data
+function copyMatrix(object::EigenMatrix)::Matrix{Cdouble} # Renaming to copyMatrix or similar might be clearer
+    return copy(unsafe_wrap(Array, Base.unsafe_convert(Ptr{Cdouble},data(object)), (rows(object),cols(object)); own = false))
 end
 
 """
@@ -180,9 +161,14 @@ Returns the matrix as a Julia vector.
 # Arguments
 - `object::EigenMatrix`: the matrix
 
+# Notes:
+This is the safe and robust way to create a Julia Vector from C++ 'new'-allocated data
+It does not transfer ownership of the data, so the Julia Vector will not free the C++ memory when it is garbage collected.
+The C++ memory will be freed by the finalizer.
+
 """
-function asVector(object::EigenMatrix)::Vector{Cdouble}
-    return unsafe_wrap(Array, data(object), (rows(object)); own = false)
+function copyVector(object::EigenMatrix)::Vector{Cdouble}
+    return copy(unsafe_wrap(Array, data(object), (rows(object)); own = false))
 end
 
 Base.deepcopy(obj::EigenMatrix) = EigenMatrix(rows(obj),cols(obj),data(obj))
@@ -311,36 +297,19 @@ function data(object::EigenMatrixInt)::Ptr{Cint}
 end
 
 """
-Returns the matrix as a Julia matrix (transfers ownership).
-
-# Arguments
-- `object::EigenMatrixInt`: the matrix
-
-"""
-function toMatrix(object::EigenMatrixInt)::Matrix{Cint}
-    return unsafe_wrap(Array, data(object), (rows(object),cols(object)); own = true)
-end
-
-"""
-Returns the matrix as a Julia vector (transfers ownership).
-
-# Arguments
-- `object::EigenMatrixInt`: the matrix
-
-"""
-function toVector(object::EigenMatrixInt)::Vector{Cint}
-    return unsafe_wrap(Array, data(object), (rows(object)); own = true)
-end
-
-"""
 Returns the matrix as a Julia matrix.
 
 # Arguments
 - `object::EigenMatrixInt`: the matrix
 
+# Notes:
+This is the safe and robust way to create a Julia Matrix from C++ 'new'-allocated data
+It does not transfer ownership of the data, so the Julia Matrix will not free the C++ memory when it is garbage collected.
+The C++ memory will be freed by the finalizer.
+
 """
-function asMatrix(object::EigenMatrixInt)::Matrix{Int}
-    return unsafe_wrap(Array, data(object), (rows(object),cols(object)); own = false)
+function copyMatrix(object::EigenMatrixInt)::Matrix{Cint}
+    return copy(unsafe_wrap(Array, Base.unsafe_convert(Ptr{Cint},data(object)), (rows(object),cols(object)); own = false))
 end
 
 """
@@ -349,9 +318,14 @@ Returns the matrix as a Julia vector.
 # Arguments
 - `object::EigenMatrixInt`: the matrix
 
+# Notes:
+This is the safe and robust way to create a Julia Vector from C++ 'new'-allocated data
+It does not transfer ownership of the data, so the Julia Vector will not free the C++ memory when it is garbage collected.
+The C++ memory will be freed by the finalizer.
+
 """
-function asVector(object::EigenMatrixInt)::Vector{Int}
-    return unsafe_wrap(Array, data(object), (rows(object)); own = false)
+function copyVector(object::EigenMatrixInt)::Vector{Int}
+    return copy(unsafe_wrap(Array, Base.unsafe_convert(Ptr{Cint},data(object)), (rows(object),cols(object)); own = false))
 end
 
 Base.deepcopy(obj::EigenMatrixInt) = EigenMatrixInt(rows(obj),cols(obj),data(obj))
@@ -481,7 +455,7 @@ function nnz(m::EigenSparseMatrix)::Int
     return ccall((:gsSparseMatrix_nnz,libgismo),Cint,(Ptr{gsCSparseMatrix},),m.ptr)
 end
 
-function toMatrix(m::EigenSparseMatrix)::SparseMatrixCSC{Cdouble,Cint}
+function copyMatrix(m::EigenSparseMatrix)::SparseMatrixCSC{Cdouble,Cint}
     Nrows = rows(m)
     Ncols = cols(m)
     NNZ   = nnz(m)

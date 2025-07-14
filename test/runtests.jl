@@ -14,8 +14,7 @@ using Test
 
             @test rows(m) == 3
             @test cols(m) == 3
-            @test M0 == toMatrix(m)
-            @test M0 == asMatrix(m)
+            @test M0 == copyMatrix(m)
         end
 
         @testset "matrixInt" begin
@@ -28,8 +27,7 @@ using Test
 
             @test rows(m) == 3
             @test cols(m) == 3
-            @test M0 == toMatrix(m)
-            @test M0 == asMatrix(m)
+            @test M0 == copyMatrix(m)
         end
 
         @testset "sparseMatrix" begin
@@ -43,40 +41,12 @@ using Test
             @test rows(EM) == 3
             @test cols(EM) == 3
             @test Gismo.nnz(EM) == 3
-            @test M == toMatrix(EM)
+            @test M == copyMatrix(EM)
             (Rows,Cols,Vals) = findnz(M)
             @test Rows == R
             @test Cols == C
             @test Vals == V
         end
-
-        # @testset "vectorDouble" begin
-        #     empty = EigenVector(3)
-        #     @test rows(empty) == 3
-        #     @test cols(empty) == 1
-
-        #     V0 = Vector{Cdouble}([1.,2.,3.])
-        #     v = EigenVector(V0)
-
-        #     @test rows(v) == 3
-        #     @test cols(v) == 1
-        #     @test V0 == toVector(v)
-        #     @test V0 == asVector(v)
-        # end
-
-        # @testset "vectorInt" begin
-        #     empty = EigenVectorInt(3)
-        #     @test rows(empty) == 3
-        #     @test cols(empty) == 1
-
-        #     V0 = Vector{Cint}([1,2,3])
-        #     v = EigenVectorInt(V0)
-
-        #     @test rows(v) == 3
-        #     @test cols(v) == 1
-        #     @test V0 == toVector(v)
-        #     @test V0 == asVectorInt(v)
-        # end
     end
 
     @testset verbose = true "bases" begin
@@ -169,14 +139,14 @@ using Test
             points2D[1,:] = repeat(points1D, N)
             points2D[2,:] = repeat(points1D, inner=N)
 
-            @test_nowarn(acts = asMatrix(actives(TBB,points2D)))
-            @test_nowarn(acts = asMatrix(actives(THB,points2D)))
-            @test_nowarn(vals = asMatrix(val(TBB,points2D)))
-            @test_nowarn(vals = asMatrix(val(THB,points2D)))
-            @test_nowarn(der  = asMatrix(deriv(TBB,points2D)))
-            @test_nowarn(der  = asMatrix(deriv(THB,points2D)))
-            @test_nowarn(der2 = asMatrix(deriv2(TBB,points2D)))
-            @test_nowarn(der2 = asMatrix(deriv2(THB,points2D)))
+            @test_nowarn(acts = copyMatrix(actives(TBB,points2D)))
+            @test_nowarn(acts = copyMatrix(actives(THB,points2D)))
+            @test_nowarn(vals = copyMatrix(val(TBB,points2D)))
+            @test_nowarn(vals = copyMatrix(val(THB,points2D)))
+            @test_nowarn(der  = copyMatrix(deriv(TBB,points2D)))
+            @test_nowarn(der  = copyMatrix(deriv(THB,points2D)))
+            @test_nowarn(der2 = copyMatrix(deriv2(TBB,points2D)))
+            @test_nowarn(der2 = copyMatrix(deriv2(THB,points2D)))
 
             @test_nowarn ((val) = compute(TBB,points2D,0))
             @test_nowarn ((val) = compute(THB,points2D,0))
@@ -186,12 +156,12 @@ using Test
             @test_nowarn ((val,der,der2) = compute(THB,points2D,2))
 
             i = 1
-            @test_nowarn(vals = asMatrix(val(TBB,i,points2D)))
-            @test_nowarn(vals = asMatrix(val(THB,i,points2D)))
-            @test_nowarn(der  = asMatrix(deriv(TBB,i,points2D)))
-            @test_nowarn(der  = asMatrix(deriv(THB,i,points2D)))
-            @test_nowarn(der2 = asMatrix(deriv2(TBB,i,points2D)))
-            @test_nowarn(der2 = asMatrix(deriv2(THB,i,points2D)))
+            @test_nowarn(vals = copyMatrix(val(TBB,i,points2D)))
+            @test_nowarn(vals = copyMatrix(val(THB,i,points2D)))
+            @test_nowarn(der  = copyMatrix(deriv(TBB,i,points2D)))
+            @test_nowarn(der  = copyMatrix(deriv(THB,i,points2D)))
+            @test_nowarn(der2 = copyMatrix(deriv2(TBB,i,points2D)))
+            @test_nowarn(der2 = copyMatrix(deriv2(THB,i,points2D)))
         end
     end
     @testset verbose = true "splines" begin
@@ -220,12 +190,12 @@ using Test
             points2D = zeros(2,N*N)
             points2D[1,:] = repeat(points1D, N)
             points2D[2,:] = repeat(points1D, inner=N)
-            @test_nowarn(vals = asMatrix(val(TB,points2D)))
-            @test_nowarn(vals = asMatrix(val(THB,points2D)))
-            @test_nowarn(der  = asMatrix(deriv(TB,points2D)))
-            @test_nowarn(der  = asMatrix(deriv(THB,points2D)))
-            @test_nowarn(der2 = asMatrix(deriv2(TB,points2D)))
-            @test_nowarn(der2 = asMatrix(deriv2(THB,points2D)))
+            @test_nowarn(vals = copyMatrix(val(TB,points2D)))
+            @test_nowarn(vals = copyMatrix(val(THB,points2D)))
+            @test_nowarn(der  = copyMatrix(deriv(TB,points2D)))
+            @test_nowarn(der  = copyMatrix(deriv(THB,points2D)))
+            @test_nowarn(der2 = copyMatrix(deriv2(TB,points2D)))
+            @test_nowarn(der2 = copyMatrix(deriv2(THB,points2D)))
 
             @test_nowarn ((val) = compute(TB,points2D,0))
             @test_nowarn ((val) = compute(THB,points2D,0))

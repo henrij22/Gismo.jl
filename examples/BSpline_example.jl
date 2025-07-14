@@ -14,7 +14,7 @@ B = BSpline(BB,CC)
 points1D = zeros(1,3)
 points1D[1,:] = range(0,stop=1,length=3)
 evMat = val(B,points1D) # this is a C++ pointer
-ev = asMatrix(evMat) # convert to a Julia matrix (not owning the data)
+ev = copyMatrix(evMat) # convert to a Julia matrix (not owning the data)
 
 # Plot the geometry
 plot(ev[1,:],ev[2,:],legend=false)
