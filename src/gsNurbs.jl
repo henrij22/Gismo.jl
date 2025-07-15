@@ -581,20 +581,6 @@ function NurbsAnnulus(r1::Cdouble=1.0,
 end
 
 """
-Create a saddle represented by a B-spline
-
-# Examples
-```jldoctest output=(false)
-g = BSplineSaddle()
-# output
-```
-"""
-function BSplineSaddle()::Geometry
-    g = ccall((:gsNurbsCreator_BSplineSaddle,libgismo),Ptr{gsCGeometry},(),)
-    return Geometry(g)
-end
-
-"""
 Create a sphere represented by a NURBS
 
 # Arguments

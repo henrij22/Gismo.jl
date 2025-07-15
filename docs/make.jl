@@ -23,7 +23,8 @@ SUBSECTION_PAGES = [
     "gsIO.md",
     "gsMatrix.md",
     "gsModeling.md",
-    "gsNurbs.md"
+    "gsNurbs.md",
+    "gsPde.md"
 ]
 
 makedocs(
