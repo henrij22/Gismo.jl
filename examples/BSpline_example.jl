@@ -17,8 +17,8 @@ evMat = val(B,points1D) # this is a C++ pointer
 ev = copyMatrix(evMat) # convert to a Julia matrix (not owning the data)
 
 # Plot the geometry
-plot(ev[1,:],ev[2,:],legend=false)
-plot!(CC[:,1],CC[:,2],legend=false)
-plot!(CC[:,1],CC[:,2],legend=false,seriestype=:scatter)
-gui()
+p=plot(ev[1,:],ev[2,:],legend=false)
+plot!(p,CC[:,1],CC[:,2],legend=false)
+plot!(p,CC[:,1],CC[:,2],legend=false,seriestype=:scatter)
+display(p)
 
