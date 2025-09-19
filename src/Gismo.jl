@@ -1,15 +1,17 @@
 module Gismo
 
-import gismo_jll:libgismo
+import gismo_jll: libgismo
 
 # Forward declaration of structs
 include("Declarations.jl")
 
+# Load gsMatrix
+include("gsMatrix.jl")
+
+
 # Load gsCore
 include("gsCore.jl")
 
-# Load gsMatrix
-include("gsMatrix.jl")
 
 # Load gsAssembler
 include("gsAssembler.jl")
